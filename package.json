@@ -1,0 +1,43 @@
+{
+  "//1": "describes your app and its dependencies",
+  "//2": "https://docs.npmjs.com/files/package.json",
+  "//3": "updating this file will download and update your packages",
+  "name": "dynamo-easy-glitch",
+  "version": "0.0.1",
+  "description": "simple project as showcase for dynamo-easy on node",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc && node ./dist/index.js"
+  },
+  "dependencies": {
+    "@shiftcoders/dynamo-easy": "^2.4.2",
+    "@types/lodash": "^4.14.116",
+    "@types/moment-timezone": "^0.5.8",
+    "@types/node": "^8.10.3",
+    "@types/request-promise-native": "^1.0.15",
+    "aws-sdk": "^2.342.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.22.1",
+    "reflect-metadata": "^0.1.12",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
+    "rxjs": "^6.1.0",
+    "tslib": "^1.9.1",
+    "typescript": "^2.9.2"
+  },
+  "engines": {
+    "node": "8.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/#!/project/welcome-project"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "@shiftcoders/dynamo-easy",
+    "aws",
+    "dynamo"
+  ]
+}

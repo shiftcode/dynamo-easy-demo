@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es2016",
+    "module": "commonjs",
+    "lib": [
+      "es2016",
+      "esnext.asynciterable"
+    ],
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "importHelpers": true,
+    "allowJs": true,
+    
+    "sourceMap":  true,
+    "outDir": "./dist/"
+  }
+}

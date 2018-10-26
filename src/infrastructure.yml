@@ -1,0 +1,51 @@
+# definition for the tables in AWS dynamoDb
+
+Resources:
+  TableEmployee:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: email
+        AttributeType: S
+      KeySchema:
+      - AttributeName: email
+        KeyType: HASH
+    TableName: employees
+  TableProject:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: clientSlug
+        AttributeType: S
+      - AttributeName: slug
+        AttributeType: S
+      KeySchema:
+      - AttributeName: clientSlug
+        KeyType: HASH
+      - AttributeName: slug
+        KeyType: RANGE
+    TableName: projects
+  TableTimeEntries:
+    Type: AWS::DynamoDB::Table
+    AttributeDefinitions:
+    - AttributeName: monthEmail
+      AttributeType: S
+    - AttributeName: startDate
+      AttributeType: S
+    - AttributeName: clientProject
+      AttributeType: S
+    - AttributeName: unixTsUserId
+      AttributeType: N
+    KeySchema:
+    - AttributeName: monthEmail
+      KeyType: HASH
+    - AttributeName: startDate
+      KeyType: RANGE
+    GlobalSecondaryIndexes:
+    - IndexName: clientProject-unixTsUserId-index
+      KeySchema:
+      - AttributeName: clientProject
+        KeyType: HASH
+      - AttributeName: unixTsUserId
+        KeyType: RANGE
+    TableName: timeEntries
