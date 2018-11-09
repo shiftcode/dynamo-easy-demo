@@ -26,7 +26,8 @@ function init() {
 }
 
 async function write() {
-  console.debug('write entries')
+
+  console.debug('write employees')
   const employees: Employee[] = [
     new Employee(
       1,
@@ -78,6 +79,8 @@ async function write() {
   ]
   await employeeService.writeMany(employees)
 
+
+  console.debug('write projects')
   const projects: Project[] = [
     new Project('Shiftcode GmbH', 'dynamo-easy', moment('2018-01-01')),
     new Project('Example Inc.', 'An Easy Project', moment('2018-02-01')),
@@ -86,6 +89,8 @@ async function write() {
   ]
   await projectService.writeMany(projects)
 
+
+  console.debug('write time entries')
   const timeEntries = []
   for (const emp of employees) {
     for (const proj of projects) {
@@ -104,11 +109,16 @@ async function write() {
   }
   await timeEntryService.writeMany(timeEntries)
 
-  await employeeService.terminateEmployment(employees[5], moment('2018-08-31'))
-  await employeeService.removeAchievement(employees[5], ['sixth employee'])
-  await employeeService.removeSkills(employees[5], <Set<string>>employees[5].skills)
-  await employeeService.addAchievements(employees[5], new Set(['getting fired']))
-  await employeeService.addSkills(employees[0], new Set(['firing DAUs']))
+
+  console.debug('fire the sixth employee')
+  const emp = employees[5]
+  await Promise.all([
+    employeeService.terminateEmployment(emp, moment('2018-08-31')),
+    employeeService.removeAchievement(emp, ['sixth employee']),
+    employeeService.removeSkills(emp, <Set<string>>emp.skills),
+    employeeService.addAchievements(emp, new Set(['getting fired'])),
+    employeeService.addSkills(employees[0], new Set(['firing DAUs'])),
+  ])
 }
 
 async function read() {
