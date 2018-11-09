@@ -14,11 +14,13 @@ export class ProjectService {
    */
   getAll(): Promise<Project[]> {
     // when reading ALL items from a table you need scan
-    return this.store
-      .scan()
-      // .exec() // --> exec would return the first page of items
-      .execFetchAll()  // --> instead using execFetchAll to fetch the items of all pages (multiple requests)
-      .toPromise()
+    return (
+      this.store
+        .scan()
+        // .exec() // --> exec would return the first page of items
+        .execFetchAll() // --> instead using execFetchAll to fetch the items of all pages (multiple requests)
+        .toPromise()
+    )
   }
 
   /**
@@ -30,7 +32,8 @@ export class ProjectService {
     // when filtering a property which is neither HASH nor SORT key, you need scan as well.
     return this.store
       .scan()
-      .whereAttribute('creationDate').between(from, to)
+      .whereAttribute('creationDate')
+      .between(from, to)
       .execFetchAll()
       .toPromise()
   }
@@ -47,7 +50,6 @@ export class ProjectService {
       .toPromise()
   }
 
-
   /////////////
   // | WRITE |//
   /////////////
@@ -55,9 +57,8 @@ export class ProjectService {
   writeMany(projects: Project[]): Promise<void> {
     return this.store
       .batchWrite()
-      .put(projects)    // you could also combine a put and delete request.
+      .put(projects) // you could also combine a put and delete request.
       .exec()
       .toPromise()
   }
-
 }

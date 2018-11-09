@@ -2,9 +2,7 @@ import { MapperForType, NumberAttribute, PropertyMetadata } from '@shiftcoders/d
 import { DynamoDB } from 'aws-sdk'
 import { TimeEntryId } from './time-entry-id.model'
 
-
 export class TimeEntryIdMapper implements MapperForType<TimeEntryId, NumberAttribute> {
-
   fromDb(attributeValue: DynamoDB.AttributeValue, propertyMetadata?: PropertyMetadata<TimeEntryId>): TimeEntryId {
     return TimeEntryId.parse(attributeValue.N!)
   }
@@ -12,5 +10,4 @@ export class TimeEntryIdMapper implements MapperForType<TimeEntryId, NumberAttri
   toDb(propertyValue: TimeEntryId, propertyMetadata?: PropertyMetadata<TimeEntryId>): NumberAttribute {
     return { N: `${TimeEntryId.unparse(propertyValue)}` }
   }
-
 }

@@ -3,10 +3,8 @@ import { camelCase } from 'lodash'
 import * as moment from 'moment-timezone'
 import { MomentUnixMapper } from './moment-unix.mapper'
 
-
 @Model({ tableName: 'projects' })
 export class Project {
-
   @PartitionKey()
   clientSlug: string
 

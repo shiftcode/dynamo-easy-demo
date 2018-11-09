@@ -18,7 +18,8 @@ export class TimeEntryService {
    * @param month {Moment}
    */
   getByEmployeeAndMonth(employee: Employee, month: moment.Moment): Promise<TimeEntry[]> {
-    return this.store.query()
+    return this.store
+      .query()
       .wherePartitionKey(new MonthEmail(month, employee.email)) // get all from this partition
       .execFetchAll()
       .toPromise()
@@ -33,7 +34,8 @@ export class TimeEntryService {
       .query()
       .index(DynamoIndexes.TIME_ENTRIES_CLIENTPROJECT_UNIXTSUSERID)
       .wherePartitionKey(new ClientProject(project.clientSlug, project.slug))
-      .whereSortKey().between(new TimeEntryId(from), new TimeEntryId(moment(to).add(1, 'second')))
+      .whereSortKey()
+      .between(new TimeEntryId(from), new TimeEntryId(moment(to).add(1, 'second')))
       .execFetchAll()
       .toPromise()
   }
@@ -59,7 +61,7 @@ export class TimeEntryService {
   writeMany(entries: TimeEntry[]): Promise<void> {
     return this.store
       .batchWrite()
-      .put(entries)    // you can also combine a put and delete request.
+      .put(entries) // you can also combine a put and delete request.
       .exec()
       .toPromise()
   }
@@ -71,5 +73,4 @@ export class TimeEntryService {
       .exec()
       .toPromise()
   }
-
 }

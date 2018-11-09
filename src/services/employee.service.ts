@@ -32,12 +32,11 @@ export class EmployeeService {
       .toPromise()
   }
 
-
   /////////////
   // | WRITE |//
   /////////////
 
-  writeMany(employees: Employee[]): Promise<void>  {
+  writeMany(employees: Employee[]): Promise<void> {
     return this.store
       .batchWrite()
       .put(employees) // you can also combine a put and delete request.
@@ -46,43 +45,43 @@ export class EmployeeService {
   }
 
   terminateEmployment(employee: Employee, dateOfNotice: moment.Moment = moment()): Promise<void> {
-    return this.update(employee, update2(Employee,'dateOfNotice').set(dateOfNotice))
+    return this.update(employee, update2(Employee, 'dateOfNotice').set(dateOfNotice))
   }
 
   addAchievements(employee: Employee, achievements: Set<string>): Promise<void> {
-    const chain = update2(Employee,'achievements')
+    const chain = update2(Employee, 'achievements')
 
-    const operation = Array.isArray(employee.achievements)
-      ? chain.appendToList(achievements)
-      : chain.set(achievements)
+    const operation = Array.isArray(employee.achievements) ? chain.appendToList(achievements) : chain.set(achievements)
     return this.update(employee, operation)
   }
 
   removeAchievement(employee: Employee, achievements: string[]): Promise<void> {
-    if (!employee.achievements) { return Promise.reject('Employee does not contain any achievements') }
+    if (!employee.achievements) {
+      return Promise.reject('Employee does not contain any achievements')
+    }
 
     // find the indexes from the given achievements
     const indexes = achievements
       .map(achievement => Array.from(employee.achievements!).findIndex(a => a === achievement))
       .filter(ix => ix >= 0)
 
-    if (indexes.length === 0) { return Promise.reject('') }
+    if (indexes.length === 0) {
+      return Promise.reject('')
+    }
 
     const operation = update2(Employee, 'achievements').removeFromListAt(...indexes)
     return this.update(employee, operation)
   }
 
   addSkills(employee: Employee, skills: Set<string>): Promise<void> {
-    const chain = update2(Employee,'skills')
-    const operation = !!employee.skills
-      ? chain.add(skills)
-      : chain.set(skills)
+    const chain = update2(Employee, 'skills')
+    const operation = !!employee.skills ? chain.add(skills) : chain.set(skills)
     return this.update(employee, operation)
   }
 
   removeSkills(employee: Employee, skills: string[] | Set<string>): Promise<void> {
     // when using set, you can remove items by their value
-    const operation = update2(Employee,'skills').removeFromSet(skills)
+    const operation = update2(Employee, 'skills').removeFromSet(skills)
     return this.update(employee, operation)
   }
 
@@ -90,7 +89,7 @@ export class EmployeeService {
     /**
      * with the incrementBy/decrementBy operation you can directly edit numbers without knowing them
      */
-    const operation = update2(Employee,'tooLateInOfficeCounter').incrementBy(1)
+    const operation = update2(Employee, 'tooLateInOfficeCounter').incrementBy(1)
     return this.update(employee, operation)
   }
 

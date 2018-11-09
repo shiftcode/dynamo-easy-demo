@@ -3,7 +3,6 @@ import * as moment from 'moment-timezone'
 
 @Model({ tableName: 'employees' })
 export class Employee {
-
   // unique by email
   @PartitionKey()
   email: string
@@ -33,7 +32,14 @@ export class Employee {
 
   tooLateInOfficeCounter = 0
 
-  constructor(id: number, email: string, name: string, employment: moment.Moment, skills?:Set<string>, achievements?: Set<string>) {
+  constructor(
+    id: number,
+    email: string,
+    name: string,
+    employment: moment.Moment,
+    skills?: Set<string>,
+    achievements?: Set<string>
+  ) {
     this.id = id
     this.email = email
     this.name = name

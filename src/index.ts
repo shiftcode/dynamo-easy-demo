@@ -28,12 +28,53 @@ function init() {
 async function write() {
   console.debug('write entries')
   const employees: Employee[] = [
-    new Employee(1, 'first.employee@shiftcode.ch', 'First Employee', moment('2018-01-01'), new Set(['hacking']), new Set(['first employee'])),
-    new Employee(2, 'second.employee@shiftcode.ch', 'Second Employee', moment('2018-02-01'), new Set(['hacking']), new Set(['staying sober for one week'])),
-    new Employee(3, 'third.employee@shiftcode.ch', 'Third Employee', moment('2018-02-01'), new Set(['sleeping']), new Set(['singing a song'])),
-    new Employee(4, 'fourth.employee@shiftcode.ch', 'Fourth Employee', moment('2018-02-01'), new Set(['sleeping', 'hacking', 'table tennis'])),
-    new Employee(5, 'fifth.employee@shiftcode.ch', 'Fifth Employee', moment('2018-04-04'), new Set(['eating marzipan']), new Set(['eating 500g marzipan in 10 minutes'])),
-    new Employee(6, 'sixth.employee@shiftcode.ch', 'Sixth Employee', moment('2018-08-01'), new Set(['drinking coffee']), new Set(['sixth employee']))
+    new Employee(
+      1,
+      'first.employee@shiftcode.ch',
+      'First Employee',
+      moment('2018-01-01'),
+      new Set(['hacking']),
+      new Set(['first employee'])
+    ),
+    new Employee(
+      2,
+      'second.employee@shiftcode.ch',
+      'Second Employee',
+      moment('2018-02-01'),
+      new Set(['hacking']),
+      new Set(['staying sober for one week'])
+    ),
+    new Employee(
+      3,
+      'third.employee@shiftcode.ch',
+      'Third Employee',
+      moment('2018-02-01'),
+      new Set(['sleeping']),
+      new Set(['singing a song'])
+    ),
+    new Employee(
+      4,
+      'fourth.employee@shiftcode.ch',
+      'Fourth Employee',
+      moment('2018-02-01'),
+      new Set(['sleeping', 'hacking', 'table tennis'])
+    ),
+    new Employee(
+      5,
+      'fifth.employee@shiftcode.ch',
+      'Fifth Employee',
+      moment('2018-04-04'),
+      new Set(['eating marzipan']),
+      new Set(['eating 500g marzipan in 10 minutes'])
+    ),
+    new Employee(
+      6,
+      'sixth.employee@shiftcode.ch',
+      'Sixth Employee',
+      moment('2018-08-01'),
+      new Set(['drinking coffee']),
+      new Set(['sixth employee'])
+    ),
   ]
   await employeeService.writeMany(employees)
 
@@ -83,10 +124,10 @@ async function read() {
 
       const seconds = timeEntriesFirstMonth.map(t => t.duration).reduce(sum, 0)
       console.debug(
-        `- ${padEnd(employee.name, 20)
-          } worked ${padStart(seconds, 7)
-          } seconds in ${padStart(monthToFetch.format('MMMM YYYY'), 20)
-          }.`
+        `- ${padEnd(employee.name, 20)} worked ${padStart(seconds, 7)} seconds in ${padStart(
+          monthToFetch.format('MMMM YYYY'),
+          20
+        )}.`
       )
     }
   }
@@ -94,11 +135,13 @@ async function read() {
   {
     console.debug(`\nthe first Employee`)
     const emp: Employee | null = await employeeService.getByEmail('first.employee@shiftcode.ch')
-    toPairs(emp || {})
-      .forEach(([key, val]) => {
-        console.debug(`  ${padEnd(key, 25)}  (${padEnd(val.constructor.name + ')', 10)} ${val instanceof Set ? Array.from(val).join(' | ') : val}`)
-      })
-
+    toPairs(emp || {}).forEach(([key, val]) => {
+      console.debug(
+        `  ${padEnd(key, 25)}  (${padEnd(val.constructor.name + ')', 10)} ${
+          val instanceof Set ? Array.from(val).join(' | ') : val
+        }`
+      )
+    })
   }
 
   {
@@ -128,7 +171,10 @@ async function read() {
       const seconds = timeEntries.map(t => t.duration).reduce(sum, 0)
       const [from, to] = fromTo.map(m => m.format('l'))
       console.debug(
-        `- ${padEnd(project.name, 20)}  ${padEnd(project.client, 15)}: ${padStart(seconds, 10)} seconds | ${from} - ${to}`
+        `- ${padEnd(project.name, 20)}  ${padEnd(project.client, 15)}: ${padStart(
+          seconds,
+          10
+        )} seconds | ${from} - ${to}`
       )
     }
   }

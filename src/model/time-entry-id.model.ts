@@ -19,10 +19,8 @@ export class TimeEntryId {
     return date.unix().toString() + (<any>employeeId.toString()).padStart(MULTIPLIER_E, '0')
   }
 
-
   constructor(date: moment.Moment, employeeId: number = 0) {
     this.date = date
     this.employeeId = employeeId
   }
-
 }

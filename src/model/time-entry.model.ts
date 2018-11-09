@@ -5,7 +5,7 @@ import {
   Model,
   PartitionKey,
   SortKey,
-  Transient
+  Transient,
 } from '@shiftcoders/dynamo-easy'
 import * as moment from 'moment-timezone'
 import { DynamoIndexes } from '../static/dynamo-indexes'
@@ -22,13 +22,13 @@ import { TimeEntryId } from './time-entry-id.model'
 // means an employee can only have one time entry at a starting time
 @Model({ tableName: 'timeEntries' })
 export class TimeEntry {
-
-
   // if you want properties, which should not be stored in the table
   // you have to decorate them with @Transient()
   // --> blacklist
   @Transient()
-  get uniqueIdentifier(): string { return `${this.monthEmail}${this.startDate.toISOString()}`}
+  get uniqueIdentifier(): string {
+    return `${this.monthEmail}${this.startDate.toISOString()}`
+  }
 
   // if you want a complex type as PartitionKey or SortKey
   // you need to define a custom mapper since dynamoDb only accepts string, number or binary for such
@@ -51,7 +51,12 @@ export class TimeEntry {
 
   duration: number // seconds
 
-  static fromObjects({ clientSlug, slug }: Project, { id, email }: Employee, startDate: moment.Moment, duration: number) {
+  static fromObjects(
+    { clientSlug, slug }: Project,
+    { id, email }: Employee,
+    startDate: moment.Moment,
+    duration: number
+  ) {
     return new TimeEntry(clientSlug, slug, startDate, duration, id, email)
   }
 
