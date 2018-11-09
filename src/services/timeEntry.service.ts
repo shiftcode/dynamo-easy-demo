@@ -1,15 +1,15 @@
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment'
+import * as moment from 'moment-timezone'
+import { Employee, Project, TimeEntry, TimeEntryId } from '../model'
 import { ClientProject } from '../model/client-project.model'
 import { MonthEmail } from '../model/month-email.model'
 import { DynamoIndexes } from '../static/dynamo-indexes'
-import { Employee, Project, TimeEntry, TimeEntryId } from '../model'
 
 export class TimeEntryService {
   private store = new DynamoStore<TimeEntry>(TimeEntry)
 
   ////////////
-  //| READ |//
+  // | READ |//
   ////////////
 
   /**
@@ -19,7 +19,7 @@ export class TimeEntryService {
    */
   getByEmployeeAndMonth(employee: Employee, month: moment.Moment): Promise<TimeEntry[]> {
     return this.store.query()
-      .wherePartitionKey(new MonthEmail(month, employee.email))
+      .wherePartitionKey(new MonthEmail(month, employee.email)) // get all from this partition
       .execFetchAll()
       .toPromise()
   }
@@ -33,17 +33,13 @@ export class TimeEntryService {
       .query()
       .index(DynamoIndexes.TIME_ENTRIES_CLIENTPROJECT_UNIXTSUSERID)
       .wherePartitionKey(new ClientProject(project.clientSlug, project.slug))
-      .whereSortKey()
-      .between(
-        new TimeEntryId(from),
-        new TimeEntryId(moment(to).add(1, 'second'))
-      )
+      .whereSortKey().between(new TimeEntryId(from), new TimeEntryId(moment(to).add(1, 'second')))
       .execFetchAll()
       .toPromise()
   }
 
   /////////////
-  //| WRITE |//
+  // | WRITE |//
   /////////////
 
   deleteMonthEntriesByEmployee(employee: Employee, month: moment.Moment): Promise<void> {

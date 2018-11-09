@@ -1,7 +1,6 @@
 const SEPARATOR = '-'
 
 export class ClientProject {
-  constructor(public client: string, public project: string) {}
 
   static parse(value: string): ClientProject {
     const parts = value.split(SEPARATOR)
@@ -12,5 +11,6 @@ export class ClientProject {
   static unparse({ client, project }: ClientProject): string {
     return [client, project].join(SEPARATOR)
   }
+  constructor(public client: string, public project: string) {}
 
 }

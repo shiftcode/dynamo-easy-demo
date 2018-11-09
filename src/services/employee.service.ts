@@ -1,35 +1,43 @@
-import { DynamoStore, update } from '@shiftcoders/dynamo-easy'
+import { DynamoStore, update2 } from '@shiftcoders/dynamo-easy'
+// FIXME when exported for public-api
 import { UpdateExpressionDefinitionFunction } from '@shiftcoders/dynamo-easy/dist/_types/dynamo/expression/type/update-expression-definition-function'
-import * as moment from 'moment'
-import { Employee, TimeEntry } from '../model'
-import { DynamoIndexes } from '../static/dynamo-indexes'
+import * as moment from 'moment-timezone'
+import { Employee } from '../model'
 
 export class EmployeeService {
   private store = new DynamoStore<Employee>(Employee)
 
   ////////////
-  //| READ |//
+  // | READ |//
   ////////////
 
+  /**
+   * fetch all employees.
+   */
   getAll(): Promise<Employee[]> {
-    return this.store.scan()
+    return this.store
+      .scan()
       .execFetchAll()
       .toPromise()
   }
 
+  /**
+   * get an employee by e-mail.
+   * @param email
+   */
   getByEmail(email: string) {
-    return this.store.query()
-      .wherePartitionKey(email)
-      .execSingle()
+    return this.store
+      .get(email) // direct access since there's only the email address as partition key
+      .exec()
       .toPromise()
   }
 
 
   /////////////
-  //| WRITE |//
+  // | WRITE |//
   /////////////
 
-  writeMany(employees: Employee[]): Promise<void> {
+  writeMany(employees: Employee[]): Promise<void>  {
     return this.store
       .batchWrite()
       .put(employees) // you can also combine a put and delete request.
@@ -38,11 +46,11 @@ export class EmployeeService {
   }
 
   terminateEmployment(employee: Employee, dateOfNotice: moment.Moment = moment()): Promise<void> {
-    return this.update(employee, update<Employee>('dateOfNotice').set(dateOfNotice))
+    return this.update(employee, update2(Employee,'dateOfNotice').set(dateOfNotice))
   }
 
-  addAchievements(employee: Employee, achievements: string[]): Promise<void> {
-    const chain = update<Employee>('achievements')
+  addAchievements(employee: Employee, achievements: Set<string>): Promise<void> {
+    const chain = update2(Employee,'achievements')
 
     const operation = Array.isArray(employee.achievements)
       ? chain.appendToList(achievements)
@@ -55,17 +63,17 @@ export class EmployeeService {
 
     // find the indexes from the given achievements
     const indexes = achievements
-      .map(achievement => Array.from(employee.achievements!).findIndex(a => a == achievement))
+      .map(achievement => Array.from(employee.achievements!).findIndex(a => a === achievement))
       .filter(ix => ix >= 0)
 
     if (indexes.length === 0) { return Promise.reject('') }
 
-    const operation = update<Employee>('achievements').removeFromListAt(...indexes)
+    const operation = update2(Employee, 'achievements').removeFromListAt(...indexes)
     return this.update(employee, operation)
   }
 
-  addSkills(employee: Employee, skills: string[] | Set<string>): Promise<void> {
-    const chain = update<Employee>('skills')
+  addSkills(employee: Employee, skills: Set<string>): Promise<void> {
+    const chain = update2(Employee,'skills')
     const operation = !!employee.skills
       ? chain.add(skills)
       : chain.set(skills)
@@ -74,7 +82,7 @@ export class EmployeeService {
 
   removeSkills(employee: Employee, skills: string[] | Set<string>): Promise<void> {
     // when using set, you can remove items by their value
-    const operation = update<Employee>('skills').removeFromSet(skills)
+    const operation = update2(Employee,'skills').removeFromSet(skills)
     return this.update(employee, operation)
   }
 
@@ -82,7 +90,7 @@ export class EmployeeService {
     /**
      * with the incrementBy/decrementBy operation you can directly edit numbers without knowing them
      */
-    const operation = update<Employee>('tooLateInOfficeCounter').incrementBy(1)
+    const operation = update2(Employee,'tooLateInOfficeCounter').incrementBy(1)
     return this.update(employee, operation)
   }
 

@@ -1,15 +1,14 @@
-import { MapperForType, PropertyMetadata } from '@shiftcoders/dynamo-easy'
-import { DynamoDB } from 'aws-sdk'
+import { MapperForType, PropertyMetadata, StringAttribute } from '@shiftcoders/dynamo-easy'
 import { ClientProject } from './client-project.model'
 
 
-export class ClientProjectMapper implements MapperForType<ClientProject> {
+export class ClientProjectMapper implements MapperForType<ClientProject, StringAttribute> {
 
-  fromDb(attributeValue: DynamoDB.AttributeValue, propertyMetadata?: PropertyMetadata<ClientProject>): ClientProject {
+  fromDb(attributeValue: StringAttribute, propertyMetadata?: PropertyMetadata<ClientProject>): ClientProject {
     return ClientProject.parse(attributeValue.S!)
   }
 
-  toDb(propertyValue: ClientProject, propertyMetadata?: PropertyMetadata<ClientProject>): DynamoDB.AttributeValue {
+  toDb(propertyValue: ClientProject, propertyMetadata?: PropertyMetadata<ClientProject>): StringAttribute {
     return { S: `${ClientProject.unparse(propertyValue)}` }
   }
 

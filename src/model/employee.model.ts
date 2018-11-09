@@ -1,6 +1,5 @@
-import { Model, PartitionKey, SortedSet, SortKey, TypedSet, Date, LSISortKey } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment'
-import { DynamoIndexes } from '../static/dynamo-indexes'
+import { Date, Model, PartitionKey, SortedSet, TypedSet } from '@shiftcoders/dynamo-easy'
+import * as moment from 'moment-timezone'
 
 @Model({ tableName: 'employees' })
 export class Employee {
@@ -30,11 +29,11 @@ export class Employee {
   // will be mapped to S(tring)L(ist) in dynamodb
   // but marshalled as Set from dynamo-easy
   @SortedSet()
-  achievements?: Set<String>
+  achievements?: Set<string>
 
-  tooLateInOfficeCounter: number = 0
+  tooLateInOfficeCounter = 0
 
-  constructor(id: number, email: string, name: string, employment: moment.Moment, skills?:Set<string>, achievements?: Set<String>) {
+  constructor(id: number, email: string, name: string, employment: moment.Moment, skills?:Set<string>, achievements?: Set<string>) {
     this.id = id
     this.email = email
     this.name = name

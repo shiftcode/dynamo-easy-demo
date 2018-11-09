@@ -1,10 +1,9 @@
-import * as moment from 'moment'
+import * as moment from 'moment-timezone'
 
 const FMT_YEAR_MONTH = 'YYYYMM'
 const SEPARATOR = '-'
 
 export class MonthEmail {
-  constructor(public month: moment.Moment, public email: string) {}
 
   static parse(value: string): MonthEmail {
     const parts = value.split(SEPARATOR)
@@ -17,5 +16,9 @@ export class MonthEmail {
   static unparse({ month, email }: MonthEmail): string {
     return [month.format(FMT_YEAR_MONTH), email].join(SEPARATOR)
   }
+  constructor(
+    public month: moment.Moment,
+    public email: string
+  ) {}
 
 }

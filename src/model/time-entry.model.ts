@@ -7,21 +7,28 @@ import {
   SortKey,
   Transient
 } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment'
+import * as moment from 'moment-timezone'
+import { DynamoIndexes } from '../static/dynamo-indexes'
 import { ClientProjectMapper } from './client-project.mapper'
 import { ClientProject } from './client-project.model'
+import { Employee } from './employee.model'
 import { MonthEmailMapper } from './month-email.mapper'
 import { MonthEmail } from './month-email.model'
 import { Project } from './project.model'
-import { TimeEntryId } from './time-entry-id.model'
 import { TimeEntryIdMapper } from './time-entry-id.mapper'
-import { DynamoIndexes } from '../static/dynamo-indexes'
-import { Employee } from './employee.model'
+import { TimeEntryId } from './time-entry-id.model'
 
 // unique by monthEmail + startDate or clientProject + unixTsUserId
 // means an employee can only have one time entry at a starting time
 @Model({ tableName: 'timeEntries' })
 export class TimeEntry {
+
+
+  // if you want properties, which should not be stored in the table
+  // you have to decorate them with @Transient()
+  // --> blacklist
+  @Transient()
+  get uniqueIdentifier(): string { return `${this.monthEmail}${this.startDate.toISOString()}`}
 
   // if you want a complex type as PartitionKey or SortKey
   // you need to define a custom mapper since dynamoDb only accepts string, number or binary for such
@@ -44,13 +51,8 @@ export class TimeEntry {
 
   duration: number // seconds
 
-
-  // if you have properties or getters, which should not be stored in the table
-  // you have to decorate them with @Transient()
-  // --> blacklist
-  @Transient()
-  get uniqueIdentifier() {
-    return `${this.monthEmail}${this.startDate.toISOString()}`
+  static fromObjects({ clientSlug, slug }: Project, { id, email }: Employee, startDate: moment.Moment, duration: number) {
+    return new TimeEntry(clientSlug, slug, startDate, duration, id, email)
   }
 
   constructor(
@@ -66,9 +68,5 @@ export class TimeEntry {
     this.clientProject = new ClientProject(clientSlug, projectSlug)
     this.unixTsUserId = new TimeEntryId(startDate, userId)
     this.duration = duration
-  }
-
-  static fromObjects({ clientSlug, slug }: Project, { id, email }: Employee, startDate: moment.Moment, duration: number) {
-    return new TimeEntry(clientSlug, slug, startDate, duration, id, email)
   }
 }
