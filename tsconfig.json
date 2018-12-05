@@ -5,14 +5,16 @@
     "module": "commonjs",
     "lib": [
       "es2016",
-      "esnext.asynciterable"
+      "esnext.asynciterable",
+      "es2017.object",
+      "es2017.string"
     ],
     "strict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "importHelpers": true,
     "allowJs": true,
-    
+
     "sourceMap":  true,
     "outDir": "./dist/"
   }

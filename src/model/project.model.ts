@@ -1,7 +1,7 @@
 import { CustomMapper, Model, PartitionKey, SortKey } from '@shiftcoders/dynamo-easy'
 import { camelCase } from 'lodash'
 import * as moment from 'moment-timezone'
-import { MomentUnixMapper } from './moment-unix.mapper'
+import { momentUnixMapper } from './moment-unix.mapper'
 
 @Model({ tableName: 'projects' })
 export class Project {
@@ -14,7 +14,7 @@ export class Project {
   client: string
   name: string
 
-  @CustomMapper(MomentUnixMapper)
+  @CustomMapper(momentUnixMapper)
   creationDate: moment.Moment
 
   constructor(client: string, name: string, creationDate: moment.Moment = moment()) {

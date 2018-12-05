@@ -1,18 +1,24 @@
+import { updateDynamoEasyConfig } from '@shiftcoders/dynamo-easy'
 import * as AWS from 'aws-sdk'
 import { toPairs } from 'lodash'
 import * as moment from 'moment-timezone'
+import 'reflect-metadata' // needs to be imported before anything else
 import { Employee, Project, TimeEntry } from './model'
+import { momentIso8601Mapper } from './model/moment-iso8601.mapper'
 import { EmployeeService, ProjectService, TimeEntryService } from './services'
-import { createRandomDateFn, padEnd, padStart, sum } from './static/helper'
+import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper'
+import { createLogReceiver } from './static/my-log-receiver.function'
 
 let employeeService: EmployeeService
 let projectService: ProjectService
 let timeEntryService: TimeEntryService
 
-// set global timezone for moment
-moment.tz.setDefault('Etc/UTC')
+// todo: create a usecase for TransactWriteRequest()
 
 function init() {
+  // set global timezone for moment
+  moment.tz.setDefault('Etc/UTC')
+
   const region = 'eu-central-1'
   /**
    * read access only.
@@ -20,13 +26,17 @@ function init() {
   const credentials = new AWS.Credentials('AKIAJDIFU27G54PP6XIA', 'XABP9l+KKrHug5AZXsYYoaz3SSsuXqOkLMPqO4iu')
   AWS.config.update({ region, credentials })
 
+  updateDynamoEasyConfig({
+    dateMapper: momentIso8601Mapper,
+    logReceiver: createLogReceiver('info'),
+  })
+
   employeeService = new EmployeeService()
   projectService = new ProjectService()
   timeEntryService = new TimeEntryService()
 }
 
 async function write() {
-
   console.debug('write employees')
   const employees: Employee[] = [
     new Employee(
@@ -79,7 +89,6 @@ async function write() {
   ]
   await employeeService.writeMany(employees)
 
-
   console.debug('write projects')
   const projects: Project[] = [
     new Project('Shiftcode GmbH', 'dynamo-easy', moment('2018-01-01')),
@@ -88,7 +97,6 @@ async function write() {
     new Project('Shiftcode GmbH', 'dynamo-easy Demo', moment('2018-08-01')),
   ]
   await projectService.writeMany(projects)
-
 
   console.debug('write time entries')
   const timeEntries = []
@@ -109,14 +117,14 @@ async function write() {
   }
   await timeEntryService.writeMany(timeEntries)
 
-
   console.debug('fire the sixth employee')
-  const emp = employees[5]
+  const emp5 = employees[5]
+
   await Promise.all([
-    employeeService.terminateEmployment(emp, moment('2018-08-31')),
-    employeeService.removeAchievement(emp, ['sixth employee']),
-    employeeService.removeSkills(emp, <Set<string>>emp.skills),
-    employeeService.addAchievements(emp, new Set(['getting fired'])),
+    employeeService.terminateEmployment(emp5, moment('2018-08-31')),
+    employeeService.removeAchievement(emp5, ['sixth employee']),
+    employeeService.removeSkills(emp5, <Set<string>>emp5.skills),
+    employeeService.addAchievements(emp5, new Set(['getting fired'])),
     employeeService.addSkills(employees[0], new Set(['firing DAUs'])),
   ])
 }
@@ -134,7 +142,7 @@ async function read() {
 
       const seconds = timeEntriesFirstMonth.map(t => t.duration).reduce(sum, 0)
       console.debug(
-        `- ${padEnd(employee.name, 20)} worked ${padStart(seconds, 7)} seconds in ${padStart(
+        `- ${rightPad(employee.name, 20)} worked ${leftPad(seconds, 7)} seconds in ${leftPad(
           monthToFetch.format('MMMM YYYY'),
           20
         )}.`
@@ -147,7 +155,7 @@ async function read() {
     const emp: Employee | null = await employeeService.getByEmail('first.employee@shiftcode.ch')
     toPairs(emp || {}).forEach(([key, val]) => {
       console.debug(
-        `  ${padEnd(key, 25)}  (${padEnd(val.constructor.name + ')', 10)} ${
+        `  ${rightPad(key, 25)}  (${rightPad(val.constructor.name + ')', 10)} ${
           val instanceof Set ? Array.from(val).join(' | ') : val
         }`
       )
@@ -181,7 +189,7 @@ async function read() {
       const seconds = timeEntries.map(t => t.duration).reduce(sum, 0)
       const [from, to] = fromTo.map(m => m.format('l'))
       console.debug(
-        `- ${padEnd(project.name, 20)}  ${padEnd(project.client, 15)}: ${padStart(
+        `- ${rightPad(project.name, 20)}  ${rightPad(project.client, 15)}: ${leftPad(
           seconds,
           10
         )} seconds | ${from} - ${to}`

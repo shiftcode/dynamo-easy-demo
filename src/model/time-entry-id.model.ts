@@ -1,4 +1,5 @@
 import * as moment from 'moment-timezone'
+import { leftPad } from '../static/helper'
 
 const MULTIPLIER_E = 10
 
@@ -16,7 +17,7 @@ export class TimeEntryId {
   }
 
   static unparse({ date, employeeId }: TimeEntryId): string {
-    return date.unix().toString() + (<any>employeeId.toString()).padStart(MULTIPLIER_E, '0')
+    return `${date.unix()}${leftPad(employeeId, MULTIPLIER_E, '0')}`
   }
 
   constructor(date: moment.Moment, employeeId: number = 0) {

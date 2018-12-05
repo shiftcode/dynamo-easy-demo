@@ -41,7 +41,7 @@
     }
   },
   "dependencies": {
-    "@shiftcoders/dynamo-easy": "^3.0.2",
+    "@shiftcoders/dynamo-easy": "^4.1.0-beta.3",
     "@types/lodash": "^4.14.118",
     "@types/moment-timezone": "^0.5.8",
     "@types/node": "^8.10.37",
@@ -58,6 +58,7 @@
     "tslib": "^1.9.3",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
-    "typescript": "^3.1.6"
+    "typescript": "^3.1.6",
+    "uuid": "^3.3.2"
   }
 }

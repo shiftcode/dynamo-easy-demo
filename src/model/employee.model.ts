@@ -1,4 +1,4 @@
-import { Date, Model, PartitionKey, SortedSet, TypedSet } from '@shiftcoders/dynamo-easy'
+import { DateProperty, Model, PartitionKey, SortedSet, TypedSet } from '@shiftcoders/dynamo-easy'
 import * as moment from 'moment-timezone'
 
 @Model({ tableName: 'employees' })
@@ -13,11 +13,10 @@ export class Employee {
   name: string
 
   // will be mapped to S(tring)
-  // date type either with configuration (annotation)
-  @Date()
+  @DateProperty()
   employment: moment.Moment
 
-  // or by convention
+  @DateProperty() // date by name convention is no longer supported
   dateOfNotice?: moment.Moment
 
   // make sure the values are marshalled as Set when reading from dynamoDb

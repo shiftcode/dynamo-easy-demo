@@ -1,6 +1,4 @@
-import { DynamoStore, update2 } from '@shiftcoders/dynamo-easy'
-// FIXME when exported for public-api
-import { UpdateExpressionDefinitionFunction } from '@shiftcoders/dynamo-easy/dist/_types/dynamo/expression/type/update-expression-definition-function'
+import { DynamoStore, update2, UpdateExpressionDefinitionFunction } from '@shiftcoders/dynamo-easy'
 import * as moment from 'moment-timezone'
 import { Employee } from '../model'
 

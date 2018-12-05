@@ -4,6 +4,9 @@ const FMT_YEAR_MONTH = 'YYYYMM'
 const SEPARATOR = '-'
 
 export class MonthEmail {
+  month: moment.Moment
+  email: string
+
   static parse(value: string): MonthEmail {
     const parts = value.split(SEPARATOR)
     if (parts.length !== 2) {
@@ -19,5 +22,9 @@ export class MonthEmail {
   static unparse({ month, email }: MonthEmail): string {
     return [month.format(FMT_YEAR_MONTH), email].join(SEPARATOR)
   }
-  constructor(public month: moment.Moment, public email: string) {}
+
+  constructor(month: moment.Moment, email: string) {
+    this.month = month
+    this.email = email
+  }
 }

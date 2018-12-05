@@ -8,8 +8,6 @@ export const createRandomDateFn = (from: moment.Moment, to: moment.Moment) => {
   return () => moment.unix(min + Math.floor(Math.random() * factor))
 }
 
-export const padStart = (txt: string | number | boolean, length: number, c?: string) =>
-  <string>(<any>txt.toString()).padStart(length, c)
+export const leftPad = (txt: string | number | boolean, lngth: number, c?: string) => txt.toString().padStart(lngth, c)
 
-export const padEnd = (txt: string | number | boolean, length: number, c?: string) =>
-  <string>(<any>txt.toString()).padEnd(length, c)
+export const rightPad = (txt: string | number | boolean, lngth: number, c?: string) => txt.toString().padEnd(lngth, c)
