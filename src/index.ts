@@ -1,4 +1,12 @@
-import { updateDynamoEasyConfig } from '@shiftcoders/dynamo-easy'
+import {
+  attribute,
+  BatchWriteRequest,
+  TransactConditionCheck,
+  TransactUpdate,
+  TransactWriteRequest,
+  update2,
+  updateDynamoEasyConfig,
+} from '@shiftcoders/dynamo-easy'
 import * as AWS from 'aws-sdk'
 import { toPairs } from 'lodash'
 import * as moment from 'moment-timezone'
@@ -13,8 +21,6 @@ let employeeService: EmployeeService
 let projectService: ProjectService
 let timeEntryService: TimeEntryService
 
-// todo: create a usecase for TransactWriteRequest()
-
 function init() {
   // set global timezone for moment
   moment.tz.setDefault('Etc/UTC')
@@ -24,6 +30,7 @@ function init() {
    * read access only.
    */
   const credentials = new AWS.Credentials('AKIAJDIFU27G54PP6XIA', 'XABP9l+KKrHug5AZXsYYoaz3SSsuXqOkLMPqO4iu')
+
   AWS.config.update({ region, credentials })
 
   updateDynamoEasyConfig({
@@ -37,7 +44,8 @@ function init() {
 }
 
 async function write() {
-  console.debug('write employees')
+  console.debug('write employees and projects')
+
   const employees: Employee[] = [
     new Employee(
       1,
@@ -87,35 +95,53 @@ async function write() {
       new Set(['sixth employee'])
     ),
   ]
-  await employeeService.writeMany(employees)
-
-  console.debug('write projects')
   const projects: Project[] = [
     new Project('Shiftcode GmbH', 'dynamo-easy', moment('2018-01-01')),
     new Project('Example Inc.', 'An Easy Project', moment('2018-02-01')),
     new Project('Example Inc.', 'Other Project', moment('2018-04-01')),
     new Project('Shiftcode GmbH', 'dynamo-easy Demo', moment('2018-08-01')),
   ]
-  await projectService.writeMany(projects)
+
+  // write many (up to 25) items of different tables in one call with the BatchWriteRequest
+  await new BatchWriteRequest()
+    .put(Project, projects)
+    .put(Employee, employees)
+    .exec()
+    .toPromise()
 
   console.debug('write time entries')
   const timeEntries = []
   for (const emp of employees) {
-    for (const proj of projects) {
+    for (const pro of projects) {
+      // randomly create some time entries per employee and project
       const dateCreator = createRandomDateFn(
-        emp.employment.isAfter(proj.creationDate) ? emp.employment : proj.creationDate,
+        emp.employment.isAfter(pro.creationDate) ? emp.employment : pro.creationDate,
         moment('2018-08-31')
       )
       const t = Math.random() * 10
       for (let i = 0; i < t; i++) {
-        timeEntries.push(TimeEntry.fromObjects(proj, emp, dateCreator(), Math.floor(Math.random() * 8 * 60 * 60)))
+        timeEntries.push(TimeEntry.fromObjects(pro, emp, dateCreator(), Math.floor(Math.random() * 8 * 60 * 60)))
       }
     }
+    // randomly set the tooLateInOfficeCounter
     for (let r = Math.random() * 10; r > 0; r--) {
       await employeeService.incrementTooLateInOfficeCounter(emp)
     }
   }
   await timeEntryService.writeMany(timeEntries)
+
+  // IF THE FIRST EMPLOYEE IS ABLE TO HACK && THE SECOND EMPLOYEE WAS NOT FIRED YET,
+  // --> ADD JUMPING AS A SKILL TO THE SECOND EMPLOYEE
+  new TransactWriteRequest().transact(
+    new TransactConditionCheck(Employee, 'first.employee@shiftcode.ch').onlyIf(
+      attribute('skills').contains(['hacking'])
+    ),
+
+    new TransactUpdate(Employee, 'second.employee@shiftcode.ch')
+      .operations(update2(Employee, 'skills').add(new Set(['jumping'])))
+      .onlyIfAttribute('dateOfNotice')
+      .null()
+  )
 
   console.debug('fire the sixth employee')
   const emp5 = employees[5]

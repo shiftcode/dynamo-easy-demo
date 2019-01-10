@@ -59,6 +59,7 @@ export class TimeEntryService {
   }
 
   writeMany(entries: TimeEntry[]): Promise<void> {
+    // write many (up to 25) of same table in one request with store.batchWrite
     return this.store
       .batchWrite()
       .put(entries) // you can also combine a put and delete request.

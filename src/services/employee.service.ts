@@ -30,20 +30,24 @@ export class EmployeeService {
       .toPromise()
   }
 
-  /////////////
-  // | WRITE |//
-  /////////////
-
-  writeMany(employees: Employee[]): Promise<void> {
+  transactGetManyByEmail(...emailAddresses: string[]) {
     return this.store
-      .batchWrite()
-      .put(employees) // you can also combine a put and delete request.
+      .transactGet(emailAddresses.map(email => ({ email })))
       .exec()
       .toPromise()
   }
 
+  /////////////
+  // | WRITE |//
+  /////////////
+
   terminateEmployment(employee: Employee, dateOfNotice: moment.Moment = moment()): Promise<void> {
-    return this.update(employee, update2(Employee, 'dateOfNotice').set(dateOfNotice))
+    return this.store
+      .update(employee.email, employee.id)
+      .updateAttribute('dateOfNotice')
+      .set(dateOfNotice)
+      .exec()
+      .toPromise()
   }
 
   addAchievements(employee: Employee, achievements: Set<string>): Promise<void> {
@@ -67,8 +71,12 @@ export class EmployeeService {
       return Promise.reject('')
     }
 
-    const operation = update2(Employee, 'achievements').removeFromListAt(...indexes)
-    return this.update(employee, operation)
+    return this.store
+      .update(employee.email, employee.id)
+      .updateAttribute('achievements')
+      .removeFromListAt(...indexes)
+      .exec()
+      .toPromise()
   }
 
   addSkills(employee: Employee, skills: Set<string>): Promise<void> {
@@ -79,8 +87,12 @@ export class EmployeeService {
 
   removeSkills(employee: Employee, skills: string[] | Set<string>): Promise<void> {
     // when using set, you can remove items by their value
-    const operation = update2(Employee, 'skills').removeFromSet(skills)
-    return this.update(employee, operation)
+    return this.store
+      .update(employee.email, employee.id)
+      .updateAttribute('skills')
+      .removeFromSet(skills)
+      .exec()
+      .toPromise()
   }
 
   incrementTooLateInOfficeCounter(employee: Employee): Promise<void> {

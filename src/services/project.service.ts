@@ -49,16 +49,4 @@ export class ProjectService {
       .execFetchAll()
       .toPromise()
   }
-
-  /////////////
-  // | WRITE |//
-  /////////////
-
-  writeMany(projects: Project[]): Promise<void> {
-    return this.store
-      .batchWrite()
-      .put(projects) // you could also combine a put and delete request.
-      .exec()
-      .toPromise()
-  }
 }
