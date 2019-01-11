@@ -7,16 +7,17 @@ export class Employee {
   @PartitionKey()
   email: string
 
-  // unique by id
+  // unique by id as well, but not declared as such
   id: number
 
+  // the name of the employee
   name: string
 
-  // will be mapped to S(tring)
+  // will be mapped to S(tring) through the Mapper provided in updateDynamoEasyConfig
   @DateProperty()
   employment: moment.Moment
 
-  @DateProperty() // date by name convention is no longer supported
+  @DateProperty()
   dateOfNotice?: moment.Moment
 
   // make sure the values are marshalled as Set when reading from dynamoDb
@@ -24,7 +25,7 @@ export class Employee {
   @TypedSet()
   skills?: Set<string>
 
-  // will be mapped to S(tring)L(ist) in dynamodb
+  // will be mapped to S(tring)L(ist) in dynamodb (to keep the order)
   // but marshalled as Set from dynamo-easy
   @SortedSet()
   achievements?: Set<string>
