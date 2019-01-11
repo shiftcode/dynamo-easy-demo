@@ -8,7 +8,6 @@ import {
   updateDynamoEasyConfig,
 } from '@shiftcoders/dynamo-easy'
 import * as AWS from 'aws-sdk'
-import { toPairs } from 'lodash'
 import * as moment from 'moment-timezone'
 import 'reflect-metadata' // needs to be imported before anything else
 import { Employee, Project, TimeEntry } from './model'
@@ -179,7 +178,7 @@ async function read() {
   {
     console.debug(`\nthe first Employee`)
     const emp: Employee | null = await employeeService.getByEmail('first.employee@shiftcode.ch')
-    toPairs(emp || {}).forEach(([key, val]) => {
+    Object.entries(emp || {}).forEach(([key, val]) => {
       console.debug(
         `  ${rightPad(key, 25)}  (${rightPad(val.constructor.name + ')', 10)} ${
           val instanceof Set ? Array.from(val).join(' | ') : val
