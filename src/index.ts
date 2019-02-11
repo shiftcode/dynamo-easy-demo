@@ -123,9 +123,7 @@ async function write() {
   // --> ADD JUMPING AS A SKILL TO THE SECOND EMPLOYEE
   await new TransactWriteRequest()
     .transact(
-      new TransactConditionCheck(Employee, 'first.employee@shiftcode.ch')
-        .onlyIfAttribute('skills')
-        .contains(new Set(['hacking'])),
+      new TransactConditionCheck(Employee, 'first.employee@shiftcode.ch').onlyIfAttribute('skills').contains('hacking'),
       new TransactUpdate(Employee, 'second.employee@shiftcode.ch')
         .updateAttribute('skills')
         .add(['jumping'])
@@ -147,7 +145,8 @@ async function write() {
 }
 
 async function read() {
-  // set aws config before instantiating DynamoStore (which itself creates DynamoDB instance from AWS which needs the config)
+  // set aws config before instantiating DynamoStore
+  // (which itself creates DynamoDB instance from AWS which needs the config)
   updateDynamoEasyConfig({
     // used to make sure the aws credentials are set and valid before making a call to dynamoDb
     sessionValidityEnsurer: new AnonymousAuthService().sessionValidityEnsurer,
