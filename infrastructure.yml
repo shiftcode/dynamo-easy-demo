@@ -1,6 +1,98 @@
-# definition for the tables in AWS dynamoDb
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: 'dynamo-easy demo'
 
 Resources:
+
+  CognitoIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      # must match pattern [\w]+ so dash is not an allowed character
+      IdentityPoolName:
+        Fn::Join:
+        - '_'
+        - - Fn::Join:
+            - '_'
+            - Fn::Split:
+              - '-'
+              - Ref: 'AWS::StackName'
+          - identityPool
+      AllowUnauthenticatedIdentities: true
+
+# ROLES
+  IamRoleUnauthenticated:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Federated: cognito-identity.amazonaws.com
+          Action: sts:AssumeRoleWithWebIdentity
+          Condition:
+            StringEquals:
+              cognito-identity.amazonaws.com:aud:
+                Ref: CognitoIdentityPool
+            ForAnyValue:StringLike:
+              cognito-identity.amazonaws.com:amr: unauthenticated
+      RoleName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - unauth
+          - Ref: AWS::Region
+
+# POLICIES
+  DynamoDbReadOnlyPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+            - dynamodb:BatchGetItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+            - dynamodb:Scan
+
+          Resource:
+            - Fn::Join:
+              - ''
+              - - 'arn:aws:dynamodb:'
+                - Ref: AWS::Region
+                - ':'
+                - Ref: AWS::AccountId
+                - :table/
+                - Fn::Join:
+                  - '-'
+                  - - Ref: AWS::StackName
+                    - '*'
+      PolicyName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - dynamoDBReadOnly
+          - Ref: AWS::Region
+      Roles:
+      - Ref: IamRoleUnauthenticated
+
+
+# ROLE ATTACHMENT
+  CognitoIdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId:
+        Ref: CognitoIdentityPool
+      Roles:
+        unauthenticated:
+          Fn::GetAtt: [IamRoleUnauthenticated, Arn]
+    DependsOn:
+      - DynamoDbReadOnlyPolicy
+
+  # dynamodb tables
+
   TableEmployee:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -10,7 +102,13 @@ Resources:
       KeySchema:
       - AttributeName: email
         KeyType: HASH
-    TableName: employees
+      TableName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - employees
+      BillingMode: PAY_PER_REQUEST
+
   TableProject:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -24,28 +122,53 @@ Resources:
         KeyType: HASH
       - AttributeName: slug
         KeyType: RANGE
-    TableName: projects
+      TableName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - projects
+      BillingMode: PAY_PER_REQUEST
+
   TableTimeEntries:
     Type: AWS::DynamoDB::Table
-    AttributeDefinitions:
-    - AttributeName: monthEmail
-      AttributeType: S
-    - AttributeName: startDate
-      AttributeType: S
-    - AttributeName: clientProject
-      AttributeType: S
-    - AttributeName: unixTsUserId
-      AttributeType: N
-    KeySchema:
-    - AttributeName: monthEmail
-      KeyType: HASH
-    - AttributeName: startDate
-      KeyType: RANGE
-    GlobalSecondaryIndexes:
-    - IndexName: clientProject-unixTsUserId-index
-      KeySchema:
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: monthEmail
+        AttributeType: S
+      - AttributeName: startDate
+        AttributeType: S
       - AttributeName: clientProject
-        KeyType: HASH
+        AttributeType: S
       - AttributeName: unixTsUserId
+        AttributeType: N
+      KeySchema:
+      - AttributeName: monthEmail
+        KeyType: HASH
+      - AttributeName: startDate
         KeyType: RANGE
-    TableName: timeEntries
+      GlobalSecondaryIndexes:
+      - IndexName: clientProject-unixTsUserId-index
+        KeySchema:
+        - AttributeName: clientProject
+          KeyType: HASH
+        - AttributeName: unixTsUserId
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+      TableName:
+        Fn::Join:
+        - '-'
+        - - Ref: AWS::StackName
+          - timeEntries
+      BillingMode: PAY_PER_REQUEST
+
+Outputs:
+  AwsRegion:
+    Value:
+      Ref: AWS::Region
+  CfStackNameServices:
+    Value:
+      Ref: AWS::StackName
+  CognitoIdentityPoolId:
+    Value:
+      Ref: CognitoIdentityPool

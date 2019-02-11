@@ -10,6 +10,7 @@
       "es2017.string"
     ],
     "strict": true,
+    "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "importHelpers": true,

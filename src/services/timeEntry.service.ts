@@ -6,7 +6,7 @@ import { MonthEmail } from '../model/month-email.model'
 import { DynamoIndexes } from '../static/dynamo-indexes'
 
 export class TimeEntryService {
-  private store = new DynamoStore<TimeEntry>(TimeEntry)
+  readonly store = new DynamoStore<TimeEntry>(TimeEntry)
 
   ////////////
   // | READ |//
@@ -22,7 +22,6 @@ export class TimeEntryService {
       .query()
       .wherePartitionKey(new MonthEmail(month, employee.email)) // get all from this partition
       .execFetchAll()
-      .toPromise()
   }
 
   /**
@@ -37,7 +36,6 @@ export class TimeEntryService {
       .whereSortKey()
       .between(new TimeEntryId(from), new TimeEntryId(moment(to).add(1, 'second')))
       .execFetchAll()
-      .toPromise()
   }
 
   /////////////
@@ -45,17 +43,11 @@ export class TimeEntryService {
   /////////////
 
   deleteMonthEntriesByEmployee(employee: Employee, month: moment.Moment): Promise<void> {
-    return this.store
-      .delete(new MonthEmail(month, employee.email))
-      .exec()
-      .toPromise()
+    return this.store.delete(new MonthEmail(month, employee.email)).exec()
   }
 
   writeSingle(entry: TimeEntry): Promise<void> {
-    return this.store
-      .put(entry)
-      .exec()
-      .toPromise()
+    return this.store.put(entry).exec()
   }
 
   writeMany(entries: TimeEntry[]): Promise<void> {
@@ -64,7 +56,6 @@ export class TimeEntryService {
       .batchWrite()
       .put(entries) // you can also combine a put and delete request.
       .exec()
-      .toPromise()
   }
 
   deleteMany(entries: TimeEntry[]): Promise<void> {
@@ -72,6 +63,5 @@ export class TimeEntryService {
       .batchWrite()
       .delete(entries)
       .exec()
-      .toPromise()
   }
 }

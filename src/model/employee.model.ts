@@ -1,4 +1,4 @@
-import { DateProperty, Model, PartitionKey, SortedSet, TypedSet } from '@shiftcoders/dynamo-easy'
+import { CollectionProperty, DateProperty, Model, PartitionKey } from '@shiftcoders/dynamo-easy'
 import * as moment from 'moment-timezone'
 
 @Model({ tableName: 'employees' })
@@ -20,14 +20,13 @@ export class Employee {
   @DateProperty()
   dateOfNotice?: moment.Moment
 
-  // make sure the values are marshalled as Set when reading from dynamoDb
   // will be mapped to S(tring)S(et)
-  @TypedSet()
+  // and parsed to Set<string>
   skills?: Set<string>
 
-  // will be mapped to S(tring)L(ist) in dynamodb (to keep the order)
-  // but marshalled as Set from dynamo-easy
-  @SortedSet()
+  // will be mapped to L(ist) of S(trings) in dynamodb (to keep the order)
+  // but marshalled as Set<string> from dynamo-easy
+  @CollectionProperty({ sorted: true })
   achievements?: Set<string>
 
   tooLateInOfficeCounter = 0

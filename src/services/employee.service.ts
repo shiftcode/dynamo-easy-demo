@@ -3,7 +3,7 @@ import * as moment from 'moment-timezone'
 import { Employee } from '../model'
 
 export class EmployeeService {
-  private store = new DynamoStore<Employee>(Employee)
+  readonly store = new DynamoStore<Employee>(Employee)
 
   ////////////
   // | READ |//
@@ -13,10 +13,7 @@ export class EmployeeService {
    * fetch all employees.
    */
   getAll(): Promise<Employee[]> {
-    return this.store
-      .scan()
-      .execFetchAll()
-      .toPromise()
+    return this.store.scan().execFetchAll()
   }
 
   /**
@@ -27,14 +24,10 @@ export class EmployeeService {
     return this.store
       .get(email) // direct access since there's only the email address as partition key
       .exec()
-      .toPromise()
   }
 
   transactGetManyByEmail(...emailAddresses: string[]) {
-    return this.store
-      .transactGet(emailAddresses.map(email => ({ email })))
-      .exec()
-      .toPromise()
+    return this.store.transactGet(emailAddresses.map(email => ({ email }))).exec()
   }
 
   /////////////
@@ -47,7 +40,6 @@ export class EmployeeService {
       .updateAttribute('dateOfNotice')
       .set(dateOfNotice)
       .exec()
-      .toPromise()
   }
 
   addAchievements(employee: Employee, achievements: Set<string>): Promise<void> {
@@ -76,7 +68,6 @@ export class EmployeeService {
       .updateAttribute('achievements')
       .removeFromListAt(...indexes)
       .exec()
-      .toPromise()
   }
 
   addSkills(employee: Employee, skills: Set<string>): Promise<void> {
@@ -92,7 +83,6 @@ export class EmployeeService {
       .updateAttribute('skills')
       .removeFromSet(skills)
       .exec()
-      .toPromise()
   }
 
   incrementTooLateInOfficeCounter(employee: Employee): Promise<void> {
@@ -113,6 +103,5 @@ export class EmployeeService {
       .update(employee.email, employee.id)
       .operations(...operations)
       .exec()
-      .toPromise()
   }
 }

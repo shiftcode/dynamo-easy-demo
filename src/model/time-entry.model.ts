@@ -1,10 +1,10 @@
 import {
-  CustomMapper,
   DateProperty,
   GSIPartitionKey,
   GSISortKey,
   Model,
   PartitionKey,
+  Property,
   SortKey,
   Transient,
 } from '@shiftcoders/dynamo-easy'
@@ -33,7 +33,7 @@ export class TimeEntry {
 
   // if you want a complex type as PartitionKey or SortKey
   // you need to define a custom mapper since dynamoDb only accepts string, number or binary for such
-  @CustomMapper(monthEmailMapper)
+  @Property({ mapper: monthEmailMapper })
   @PartitionKey()
   monthEmail: MonthEmail
 
@@ -41,13 +41,13 @@ export class TimeEntry {
   @DateProperty()
   startDate: moment.Moment
 
-  @CustomMapper(clientProjectMapper)
+  @Property({ mapper: clientProjectMapper })
   @GSIPartitionKey(DynamoIndexes.TIME_ENTRIES_CLIENTPROJECT_UNIXTSUSERID)
   clientProject: ClientProject
 
   // this sort key is composed of the unix timestamp and the user id.
   // it's used to read all time entries in a specific time from a project
-  @CustomMapper(timeEntryIdMapper)
+  @Property({ mapper: timeEntryIdMapper })
   @GSISortKey(DynamoIndexes.TIME_ENTRIES_CLIENTPROJECT_UNIXTSUSERID)
   unixTsUserId: TimeEntryId
 

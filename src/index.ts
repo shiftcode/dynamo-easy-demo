@@ -1,48 +1,37 @@
 import {
-  attribute,
   BatchWriteRequest,
+  LogLevel,
   TransactConditionCheck,
   TransactUpdate,
   TransactWriteRequest,
-  update2,
   updateDynamoEasyConfig,
 } from '@shiftcoders/dynamo-easy'
-import * as AWS from 'aws-sdk'
 import * as moment from 'moment-timezone'
-import 'reflect-metadata' // needs to be imported before anything else
+import 'reflect-metadata' // needs to be imported before any models are used
 import { Employee, Project, TimeEntry } from './model'
 import { momentIso8601Mapper } from './model/moment-iso8601.mapper'
 import { EmployeeService, ProjectService, TimeEntryService } from './services'
+import { AnonymousAuthService } from './services/anonymous-auth.service'
 import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper'
 import { createLogReceiver } from './static/my-log-receiver.function'
+import { dynamoEasyDemoTableNameResolver } from './static/table-name-resolver.function'
 
-let employeeService: EmployeeService
-let projectService: ProjectService
-let timeEntryService: TimeEntryService
+// set global timezone for moment
+moment.tz.setDefault('Etc/UTC')
 
-function init() {
-  // set global timezone for moment
-  moment.tz.setDefault('Etc/UTC')
-
-  const region = 'eu-central-1'
-  /**
-   * read access only.
-   */
-  const credentials = new AWS.Credentials('AKIAJDIFU27G54PP6XIA', 'XABP9l+KKrHug5AZXsYYoaz3SSsuXqOkLMPqO4iu')
-
-  AWS.config.update({ region, credentials })
-
-  updateDynamoEasyConfig({
-    dateMapper: momentIso8601Mapper,
-    logReceiver: createLogReceiver('info'),
-  })
-
-  employeeService = new EmployeeService()
-  projectService = new ProjectService()
-  timeEntryService = new TimeEntryService()
-}
+updateDynamoEasyConfig({
+  // used to extend the table names with the stack name
+  tableNameResolver: dynamoEasyDemoTableNameResolver,
+  // used to define the mapper for all @DateProperty decorated fields
+  dateMapper: momentIso8601Mapper,
+  // used to receive all log statements from dynamo-easy
+  logReceiver: createLogReceiver(LogLevel.INFO),
+})
 
 async function write() {
+  const employeeService = new EmployeeService()
+  const timeEntryService = new TimeEntryService()
+
   console.debug('write employees and projects')
 
   const employees: Employee[] = [
@@ -106,7 +95,6 @@ async function write() {
     .put(Project, projects)
     .put(Employee, employees)
     .exec()
-    .toPromise()
 
   console.debug('write time entries')
   const timeEntries = []
@@ -127,20 +115,24 @@ async function write() {
       await employeeService.incrementTooLateInOfficeCounter(emp)
     }
   }
-  await timeEntryService.writeMany(timeEntries)
+  while (timeEntries.length > 0) {
+    await timeEntryService.writeMany(timeEntries.splice(0, 25))
+  }
 
   // IF THE FIRST EMPLOYEE IS ABLE TO HACK && THE SECOND EMPLOYEE WAS NOT FIRED YET,
   // --> ADD JUMPING AS A SKILL TO THE SECOND EMPLOYEE
-  new TransactWriteRequest().transact(
-    new TransactConditionCheck(Employee, 'first.employee@shiftcode.ch').onlyIf(
-      attribute('skills').contains(['hacking'])
-    ),
-
-    new TransactUpdate(Employee, 'second.employee@shiftcode.ch')
-      .operations(update2(Employee, 'skills').add(new Set(['jumping'])))
-      .onlyIfAttribute('dateOfNotice')
-      .null()
-  )
+  await new TransactWriteRequest()
+    .transact(
+      new TransactConditionCheck(Employee, 'first.employee@shiftcode.ch')
+        .onlyIfAttribute('skills')
+        .contains(new Set(['hacking'])),
+      new TransactUpdate(Employee, 'second.employee@shiftcode.ch')
+        .updateAttribute('skills')
+        .add(['jumping'])
+        .onlyIfAttribute('dateOfNotice')
+        .null()
+    )
+    .exec()
 
   console.debug('fire the sixth employee')
   const emp5 = employees[5]
@@ -155,6 +147,16 @@ async function write() {
 }
 
 async function read() {
+  // set aws config before instantiating DynamoStore (which itself creates DynamoDB instance from AWS which needs the config)
+  updateDynamoEasyConfig({
+    // used to make sure the aws credentials are set and valid before making a call to dynamoDb
+    sessionValidityEnsurer: new AnonymousAuthService().sessionValidityEnsurer,
+  })
+
+  const employeeService = new EmployeeService()
+  const projectService = new ProjectService()
+  const timeEntryService = new TimeEntryService()
+
   {
     console.debug('\nemployees first month')
 
@@ -223,6 +225,7 @@ async function read() {
   }
 }
 
-init()
+// write will only work in nodejs on your own stack if AWS environment variables are provided
 // write().then(() => console.debug('\n\nDONE'))
+
 read().then(() => console.debug('\n\nDONE'))

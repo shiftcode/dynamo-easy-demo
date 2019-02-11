@@ -3,7 +3,7 @@ import * as moment from 'moment-timezone'
 import { Project } from '../model'
 
 export class ProjectService {
-  private store = new DynamoStore<Project>(Project)
+  readonly store = new DynamoStore<Project>(Project)
 
   ////////////
   // | READ |//
@@ -19,7 +19,6 @@ export class ProjectService {
         .scan()
         // .exec() // --> exec would return the first page of items
         .execFetchAll() // --> instead using execFetchAll to fetch the items of all pages (multiple requests)
-        .toPromise()
     )
   }
 
@@ -35,7 +34,6 @@ export class ProjectService {
       .whereAttribute('creationDate')
       .between(from, to)
       .execFetchAll()
-      .toPromise()
   }
 
   /**
@@ -47,6 +45,5 @@ export class ProjectService {
       .query()
       .wherePartitionKey(clientSlug) // get all from this partition
       .execFetchAll()
-      .toPromise()
   }
 }
