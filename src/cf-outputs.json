@@ -1,0 +1,14 @@
+[
+    {
+        "OutputKey": "CognitoIdentityPoolId",
+        "OutputValue": "eu-central-1:b473a6fd-5676-4b15-a2ed-7169427cb3a2"
+    },
+    {
+        "OutputKey": "AwsRegion",
+        "OutputValue": "eu-central-1"
+    },
+    {
+        "OutputKey": "CfStackNameServices",
+        "OutputValue": "dynamo-easy-demo"
+    }
+]
