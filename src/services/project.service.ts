@@ -1,6 +1,6 @@
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment-timezone'
 import { Project } from '../model'
+import { FnsDate } from '../static/fns-date'
 
 export class ProjectService {
   readonly store = new DynamoStore<Project>(Project)
@@ -27,7 +27,7 @@ export class ProjectService {
    * @param from
    * @param to
    */
-  getByCreationDate(from: moment.Moment, to: moment.Moment): Promise<Project[]> {
+  getByCreationDate(from: FnsDate, to: FnsDate): Promise<Project[]> {
     // when filtering a property which is neither HASH nor SORT key, you need scan as well.
     return this.store
       .scan()

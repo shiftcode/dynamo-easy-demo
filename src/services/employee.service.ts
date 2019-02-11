@@ -1,6 +1,6 @@
 import { DynamoStore, update2, UpdateExpressionDefinitionFunction } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment-timezone'
 import { Employee } from '../model'
+import { FnsDate } from '../static/fns-date'
 
 export class EmployeeService {
   readonly store = new DynamoStore<Employee>(Employee)
@@ -34,7 +34,7 @@ export class EmployeeService {
   // | WRITE |//
   /////////////
 
-  terminateEmployment(employee: Employee, dateOfNotice: moment.Moment = moment()): Promise<void> {
+  terminateEmployment(employee: Employee, dateOfNotice: FnsDate = new FnsDate()): Promise<void> {
     return this.store
       .update(employee.email, employee.id)
       .updateAttribute('dateOfNotice')

@@ -1,5 +1,5 @@
 import { CollectionProperty, DateProperty, Model, PartitionKey } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment-timezone'
+import { FnsDate } from '../static/fns-date'
 
 @Model({ tableName: 'employees' })
 export class Employee {
@@ -15,10 +15,10 @@ export class Employee {
 
   // will be mapped to S(tring) through the Mapper provided in updateDynamoEasyConfig
   @DateProperty()
-  employment: moment.Moment
+  employment: FnsDate
 
   @DateProperty()
-  dateOfNotice?: moment.Moment
+  dateOfNotice?: FnsDate
 
   // will be mapped to S(tring)S(et)
   // and parsed to Set<string>
@@ -35,7 +35,7 @@ export class Employee {
     id: number,
     email: string,
     name: string,
-    employment: moment.Moment,
+    employment: FnsDate,
     skills?: Set<string>,
     achievements?: Set<string>
   ) {

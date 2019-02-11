@@ -8,8 +8,8 @@ import {
   SortKey,
   Transient,
 } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment-timezone'
 import { DynamoIndexes } from '../static/dynamo-indexes'
+import { FnsDate } from '../static/fns-date'
 import { clientProjectMapper } from './client-project.mapper'
 import { ClientProject } from './client-project.model'
 import { Employee } from './employee.model'
@@ -28,7 +28,7 @@ export class TimeEntry {
   // --> blacklist
   @Transient()
   get uniqueIdentifier(): string {
-    return `${this.monthEmail}${this.startDate.toISOString()}`
+    return `${this.monthEmail}${this.startDate.ISO}`
   }
 
   // if you want a complex type as PartitionKey or SortKey
@@ -39,7 +39,7 @@ export class TimeEntry {
 
   @SortKey()
   @DateProperty()
-  startDate: moment.Moment
+  startDate: FnsDate
 
   @Property({ mapper: clientProjectMapper })
   @GSIPartitionKey(DynamoIndexes.TIME_ENTRIES_CLIENTPROJECT_UNIXTSUSERID)
@@ -53,19 +53,14 @@ export class TimeEntry {
 
   duration: number // seconds
 
-  static fromObjects(
-    { clientSlug, slug }: Project,
-    { id, email }: Employee,
-    startDate: moment.Moment,
-    duration: number
-  ) {
+  static fromObjects({ clientSlug, slug }: Project, { id, email }: Employee, startDate: FnsDate, duration: number) {
     return new TimeEntry(clientSlug, slug, startDate, duration, id, email)
   }
 
   constructor(
     clientSlug: string,
     projectSlug: string,
-    startDate: moment.Moment,
+    startDate: FnsDate,
     duration: number,
     userId: number,
     userEmail: string

@@ -1,9 +1,9 @@
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment-timezone'
 import { Employee, Project, TimeEntry, TimeEntryId } from '../model'
 import { ClientProject } from '../model/client-project.model'
 import { MonthEmail } from '../model/month-email.model'
 import { DynamoIndexes } from '../static/dynamo-indexes'
+import { FnsDate } from '../static/fns-date'
 
 export class TimeEntryService {
   readonly store = new DynamoStore<TimeEntry>(TimeEntry)
@@ -14,10 +14,8 @@ export class TimeEntryService {
 
   /**
    * fetch all timeEntries from an employee in a specific month.
-   * @param employee {Employee}
-   * @param month {Moment}
    */
-  getByEmployeeAndMonth(employee: Employee, month: moment.Moment): Promise<TimeEntry[]> {
+  getByEmployeeAndMonth(employee: Employee, month: FnsDate): Promise<TimeEntry[]> {
     return this.store
       .query()
       .wherePartitionKey(new MonthEmail(month, employee.email)) // get all from this partition
@@ -28,13 +26,13 @@ export class TimeEntryService {
    * get all time entries in a specific time frame from a project.
    * uses an global secondary index
    */
-  getByProject(project: Project, from: moment.Moment, to: moment.Moment): Promise<TimeEntry[]> {
+  getByProject(project: Project, from: FnsDate, to: FnsDate): Promise<TimeEntry[]> {
     return this.store
       .query()
       .index(DynamoIndexes.TIME_ENTRIES_CLIENTPROJECT_UNIXTSUSERID)
       .wherePartitionKey(new ClientProject(project.clientSlug, project.slug))
       .whereSortKey()
-      .between(new TimeEntryId(from), new TimeEntryId(moment(to).add(1, 'second')))
+      .between(new TimeEntryId(from), new TimeEntryId(to.addSeconds(1)))
       .execFetchAll()
   }
 
@@ -42,7 +40,7 @@ export class TimeEntryService {
   // | WRITE |//
   /////////////
 
-  deleteMonthEntriesByEmployee(employee: Employee, month: moment.Moment): Promise<void> {
+  deleteMonthEntriesByEmployee(employee: Employee, month: FnsDate): Promise<void> {
     return this.store.delete(new MonthEmail(month, employee.email)).exec()
   }
 

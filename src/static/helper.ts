@@ -1,11 +1,11 @@
-import * as moment from 'moment-timezone'
+import { FnsDate } from './fns-date'
 
 export const sum = (u: number, i: number) => u + i
 
-export const createRandomDateFn = (from: moment.Moment, to: moment.Moment) => {
-  const min = from.clone().unix()
-  const factor = to.clone().unix() - min
-  return () => moment.unix(min + Math.floor(Math.random() * factor))
+export const createRandomDateFn = (from: FnsDate, to: FnsDate) => {
+  const min = from.UNIX
+  const factor = to.UNIX - min
+  return () => new FnsDate(min + Math.floor(Math.random() * factor))
 }
 
 export const toCamelCase = (txt: string) =>

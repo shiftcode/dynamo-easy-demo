@@ -6,24 +6,21 @@ import {
   TransactWriteRequest,
   updateDynamoEasyConfig,
 } from '@shiftcoders/dynamo-easy'
-import * as moment from 'moment-timezone'
 import 'reflect-metadata' // needs to be imported before any models are used
 import { Employee, Project, TimeEntry } from './model'
-import { momentIso8601Mapper } from './model/moment-iso8601.mapper'
+import { fnsDateIsoMapper } from './model/fns-date-iso.mapper'
 import { EmployeeService, ProjectService, TimeEntryService } from './services'
 import { AnonymousAuthService } from './services/anonymous-auth.service'
+import { FnsDate } from './static/fns-date'
 import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper'
 import { createLogReceiver } from './static/my-log-receiver.function'
 import { dynamoEasyDemoTableNameResolver } from './static/table-name-resolver.function'
-
-// set global timezone for moment
-moment.tz.setDefault('Etc/UTC')
 
 updateDynamoEasyConfig({
   // used to extend the table names with the stack name
   tableNameResolver: dynamoEasyDemoTableNameResolver,
   // used to define the mapper for all @DateProperty decorated fields
-  dateMapper: momentIso8601Mapper,
+  dateMapper: fnsDateIsoMapper,
   // used to receive all log statements from dynamo-easy
   logReceiver: createLogReceiver(LogLevel.INFO),
 })
@@ -39,7 +36,7 @@ async function write() {
       1,
       'first.employee@shiftcode.ch',
       'First Employee',
-      moment('2018-01-01'),
+      new FnsDate('2018-01-01'),
       new Set(['hacking']),
       new Set(['first employee'])
     ),
@@ -47,7 +44,7 @@ async function write() {
       2,
       'second.employee@shiftcode.ch',
       'Second Employee',
-      moment('2018-02-01'),
+      new FnsDate('2018-02-01'),
       new Set(['hacking']),
       new Set(['staying sober for one week'])
     ),
@@ -55,7 +52,7 @@ async function write() {
       3,
       'third.employee@shiftcode.ch',
       'Third Employee',
-      moment('2018-02-01'),
+      new FnsDate('2018-02-01'),
       new Set(['sleeping']),
       new Set(['singing a song'])
     ),
@@ -63,14 +60,14 @@ async function write() {
       4,
       'fourth.employee@shiftcode.ch',
       'Fourth Employee',
-      moment('2018-02-01'),
+      new FnsDate('2018-02-01'),
       new Set(['sleeping', 'hacking', 'table tennis'])
     ),
     new Employee(
       5,
       'fifth.employee@shiftcode.ch',
       'Fifth Employee',
-      moment('2018-04-04'),
+      new FnsDate('2018-04-04'),
       new Set(['eating marzipan']),
       new Set(['eating 500g marzipan in 10 minutes'])
     ),
@@ -78,16 +75,16 @@ async function write() {
       6,
       'sixth.employee@shiftcode.ch',
       'Sixth Employee',
-      moment('2018-08-01'),
+      new FnsDate('2018-08-01'),
       new Set(['drinking coffee']),
       new Set(['sixth employee'])
     ),
   ]
   const projects: Project[] = [
-    new Project('Shiftcode GmbH', 'dynamo-easy', moment('2018-01-01')),
-    new Project('Example Inc.', 'An Easy Project', moment('2018-02-01')),
-    new Project('Example Inc.', 'Other Project', moment('2018-04-01')),
-    new Project('Shiftcode GmbH', 'dynamo-easy Demo', moment('2018-08-01')),
+    new Project('Shiftcode GmbH', 'dynamo-easy', new FnsDate('2018-01-01')),
+    new Project('Example Inc.', 'An Easy Project', new FnsDate('2018-02-01')),
+    new Project('Example Inc.', 'Other Project', new FnsDate('2018-04-01')),
+    new Project('Shiftcode GmbH', 'dynamo-easy Demo', new FnsDate('2018-08-01')),
   ]
 
   // write many (up to 25) items of different tables in one call with the BatchWriteRequest
@@ -103,7 +100,7 @@ async function write() {
       // randomly create some time entries per employee and project
       const dateCreator = createRandomDateFn(
         emp.employment.isAfter(pro.creationDate) ? emp.employment : pro.creationDate,
-        moment('2018-08-31')
+        new FnsDate('2018-08-31')
       )
       const t = Math.random() * 10
       for (let i = 0; i < t; i++) {
@@ -136,7 +133,7 @@ async function write() {
   const emp5 = employees[5]
 
   await Promise.all([
-    employeeService.terminateEmployment(emp5, moment('2018-08-31')),
+    employeeService.terminateEmployment(emp5, new FnsDate('2018-08-31')),
     employeeService.removeAchievement(emp5, ['sixth employee']),
     employeeService.removeSkills(emp5, <Set<string>>emp5.skills),
     employeeService.addAchievements(emp5, new Set(['getting fired'])),
@@ -190,7 +187,10 @@ async function read() {
 
   {
     console.debug(`\nprojects started in spring`)
-    const projectsStartedInSpring = await projectService.getByCreationDate(moment('2018-03-20'), moment('2018-06-21'))
+    const projectsStartedInSpring = await projectService.getByCreationDate(
+      new FnsDate('2018-03-20'),
+      new FnsDate('2018-06-21')
+    )
     for (const proj of projectsStartedInSpring) {
       console.debug(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('l')}`)
     }
@@ -210,10 +210,10 @@ async function read() {
     const projects = await projectService.getAll()
 
     for (const project of projects) {
-      const fromTo: [moment.Moment, moment.Moment] = [project.creationDate, moment().endOf('month')]
+      const fromTo: [FnsDate, FnsDate] = [project.creationDate, new FnsDate().endOfMonth()]
       const timeEntries = await timeEntryService.getByProject(project, ...fromTo)
       const seconds = timeEntries.map(t => t.duration).reduce(sum, 0)
-      const [from, to] = fromTo.map(m => m.format('l'))
+      const [from, to] = fromTo.map(m => m.format('YYYY-MM-DD'))
       console.debug(
         `- ${rightPad(project.name, 20)}  ${rightPad(project.client, 15)}: ${leftPad(
           seconds,

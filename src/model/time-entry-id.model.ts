@@ -1,10 +1,10 @@
-import * as moment from 'moment-timezone'
+import { FnsDate } from '../static/fns-date'
 import { leftPad } from '../static/helper'
 
 const MULTIPLIER_E = 10
 
 export class TimeEntryId {
-  date: moment.Moment
+  date: FnsDate
   employeeId: number
 
   // JS number is not exact enough to handle numbers that big (but dynamoDb is)
@@ -12,15 +12,15 @@ export class TimeEntryId {
 
   static parse(value: string): TimeEntryId {
     const employeeId = parseInt(value.substr(value.length - MULTIPLIER_E), 10)
-    const unixTs = parseInt(value.substr(0, value.length - MULTIPLIER_E), 10)
-    return new TimeEntryId(moment.unix(unixTs), employeeId)
+    const date = new FnsDate(value.substr(0, value.length - MULTIPLIER_E))
+    return new TimeEntryId(date, employeeId)
   }
 
   static unparse({ date, employeeId }: TimeEntryId): string {
-    return `${date.unix()}${leftPad(employeeId, MULTIPLIER_E, '0')}`
+    return `${date.UNIX}${leftPad(employeeId, MULTIPLIER_E, '0')}`
   }
 
-  constructor(date: moment.Moment, employeeId: number = 0) {
+  constructor(date: FnsDate, employeeId: number = 0) {
     this.date = date
     this.employeeId = employeeId
   }
