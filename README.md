@@ -1,7 +1,7 @@
 # dynamo-easy demo
-![dynamo-easy](https://blobscdn.gitbook.com/v0/b/gitbook-28427.appspot.com/o/spaces%2F-LVwl0DaP3nICLR8V49z%2Favatar.png?generation=1549468480887077&alt=media)
+[![dynamo-easy](https://blobscdn.gitbook.com/v0/b/gitbook-28427.appspot.com/o/spaces%2F-LVwl0DaP3nICLR8V49z%2Favatar.png?generation=1549468480887077&alt=media)](https://github.com/shiftcode/dynamo-easy)
 
-This project serves as a showcase how dynamo-easy can be used.
+This project serves as a showcase how [dynamo-easy](https://github.com/shiftcode/dynamo-easy) can be used.
 
 Imagine a system where every employee of a company logs his work time per project with a start time and duration.
 We use three models each with its table
