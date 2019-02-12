@@ -1,6 +1,6 @@
 {
-  "name": "dynamo-easy-glitch",
-  "version": "0.0.1",
+  "name": "dynamo-easy-demo",
+  "version": "5.0.0",
   "description": "simple project as showcase for dynamo-easy",
   "license": "MIT",
   "keywords": [
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shiftcode/dynamo-easy-glitch"
+    "url": "https://github.com/shiftcode/dynamo-easy-demo"
   },
   "scripts": {
     "lint": "tslint -t codeFrame '{src, test}/**/*.ts' --project ./tsconfig.json --fix",
