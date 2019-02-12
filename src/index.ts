@@ -193,7 +193,7 @@ async function read() {
       new FnsDate('2018-06-21')
     )
     for (const proj of projectsStartedInSpring) {
-      print(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('l')}`)
+      print(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('YYYY-MM-DD')}`)
     }
   }
 

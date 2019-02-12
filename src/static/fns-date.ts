@@ -6,7 +6,6 @@ const FMT_YEAR_MONTH = 'YYYYMM'
  * Immutable Date Object with helper functions
  */
 export class FnsDate {
-
   get YearMonth(): number {
     return parseInt(format(this.date, FMT_YEAR_MONTH), 10)
   }
@@ -18,6 +17,7 @@ export class FnsDate {
   get UNIX(): number {
     return this.date.getTime()
   }
+
   readonly date: Date
 
   static fromYearMonth(yearmonth: number | string): FnsDate {
@@ -52,5 +52,9 @@ export class FnsDate {
 
   format(fmt: string): string {
     return format(this.date, fmt)
+  }
+
+  toString(): string {
+    return this.date.toISOString()
   }
 }
