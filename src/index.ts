@@ -14,6 +14,7 @@ import { AnonymousAuthService } from './services/anonymous-auth.service'
 import { FnsDate } from './static/fns-date'
 import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper'
 import { createLogReceiver } from './static/my-log-receiver.function'
+import { print } from './static/print.function'
 import { dynamoEasyDemoTableNameResolver } from './static/table-name-resolver.function'
 
 updateDynamoEasyConfig({
@@ -29,7 +30,7 @@ async function write() {
   const employeeService = new EmployeeService()
   const timeEntryService = new TimeEntryService()
 
-  console.debug('write employees and projects')
+  print('write employees and projects')
 
   const employees: Employee[] = [
     new Employee(
@@ -93,7 +94,7 @@ async function write() {
     .put(Employee, employees)
     .exec()
 
-  console.debug('write time entries')
+  print('write time entries')
   const timeEntries = []
   for (const emp of employees) {
     for (const pro of projects) {
@@ -129,7 +130,7 @@ async function write() {
     )
     .exec()
 
-  console.debug('fire the sixth employee')
+  print('fire the sixth employee')
   const emp5 = employees[5]
 
   await Promise.all([
@@ -154,7 +155,7 @@ async function read() {
   const timeEntryService = new TimeEntryService()
 
   {
-    console.debug('\nemployees first month')
+    print('\nemployees first month')
 
     const employees = await employeeService.getAll()
 
@@ -164,7 +165,7 @@ async function read() {
       const timeEntriesFirstMonth = await timeEntryService.getByEmployeeAndMonth(employee, monthToFetch)
 
       const seconds = timeEntriesFirstMonth.map(t => t.duration).reduce(sum, 0)
-      console.debug(
+      print(
         `- ${rightPad(employee.name, 20)} worked ${leftPad(seconds, 7)} seconds in ${leftPad(
           monthToFetch.format('MMMM YYYY'),
           20
@@ -174,10 +175,10 @@ async function read() {
   }
 
   {
-    console.debug(`\nthe first Employee`)
+    print(`\nthe first Employee`)
     const emp: Employee | null = await employeeService.getByEmail('first.employee@shiftcode.ch')
     Object.entries(emp || {}).forEach(([key, val]) => {
-      console.debug(
+      print(
         `  ${rightPad(key, 25)}  (${rightPad(val.constructor.name + ')', 10)} ${
           val instanceof Set ? Array.from(val).join(' | ') : val
         }`
@@ -186,26 +187,26 @@ async function read() {
   }
 
   {
-    console.debug(`\nprojects started in spring`)
+    print(`\nprojects started in spring`)
     const projectsStartedInSpring = await projectService.getByCreationDate(
       new FnsDate('2018-03-20'),
       new FnsDate('2018-06-21')
     )
     for (const proj of projectsStartedInSpring) {
-      console.debug(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('l')}`)
+      print(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('l')}`)
     }
   }
 
   {
-    console.debug('\nprojects from shiftcode')
+    print('\nprojects from shiftcode')
     const projectsFromShiftcode = await projectService.getAllByClient('shiftcodeGmbH')
     for (const proj of projectsFromShiftcode) {
-      console.debug(`- ${proj.name} (${proj.slug}) ${proj.creationDate}`)
+      print(`- ${proj.name} (${proj.slug}) ${proj.creationDate}`)
     }
   }
 
   {
-    console.debug('\nproject time reports')
+    print('\nproject time reports')
 
     const projects = await projectService.getAll()
 
@@ -214,7 +215,7 @@ async function read() {
       const timeEntries = await timeEntryService.getByProject(project, ...fromTo)
       const seconds = timeEntries.map(t => t.duration).reduce(sum, 0)
       const [from, to] = fromTo.map(m => m.format('YYYY-MM-DD'))
-      console.debug(
+      print(
         `- ${rightPad(project.name, 20)}  ${rightPad(project.client, 15)}: ${leftPad(
           seconds,
           10
@@ -225,6 +226,6 @@ async function read() {
 }
 
 // write will only work in nodejs on your own stack if AWS environment variables are provided
-// write().then(() => console.debug('\n\nDONE'))
+// write().then(() => print('\n\nDONE'))
 
-read().then(() => console.debug('\n\nDONE'))
+read().then(() => print('\n\nDONE'))
