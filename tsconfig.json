@@ -15,7 +15,7 @@
     "emitDecoratorMetadata": true,
     "importHelpers": true,
     "allowJs": true,
-
+    "allowSyntheticDefaultImports": true,
     "sourceMap":  true,
     "outDir": "./dist/"
   }
