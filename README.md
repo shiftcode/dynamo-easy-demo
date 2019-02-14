@@ -12,14 +12,14 @@ We use three models each with its table
 
 - TimeEntries
 
-There are services one for each model to execute different operations on the tables.
-There are also some write operation though we do not allow these for security reasons.
+For each model there is a service to execute different operations on the tables.
+Write operations are not permitted with the applied IAM Policy. If you want to try these operations out deploy the stack to your own AWS account.
   
 ## credentials / security
 This demo uses a cognito identity pool for unauthenticated read access to those 3 tables only - which means no write operations will succeed.
-It's meant for you to play around with it directly in stackblitz or to clone it and test it out in your own stack.
+It's meant for you to play around with it directly in stackblitz or to clone it and test it out on your own stack.
 
 ## infrastructure
-see infrastructure.yml for the essential resource definition
+You can deploy the whole stack trough CloudFormation - see infrastructure.yml for the essential resource definitions and package.json for the scripts involved.
 
 # Made with ❤ by [shiftcode.ch](https://www.shiftcode.ch)
