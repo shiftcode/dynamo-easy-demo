@@ -225,7 +225,7 @@ async function read() {
   }
 }
 
-// write will only work in nodejs on your own stack if AWS environment variables are provided
+// write will only work if you deploy the stack to your own AWS account and add an appropriate IAM Policy.
 // write().then(() => print('\n\nDONE'))
 
 read().then(() => print('\n\nDONE'))
