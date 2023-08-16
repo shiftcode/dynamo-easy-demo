@@ -1,9 +1,14 @@
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { DynamoStore, update2, UpdateExpressionDefinitionFunction } from '@shiftcoders/dynamo-easy'
 import { Employee } from '../model'
 import { FnsDate } from '../static/fns-date'
 
 export class EmployeeService {
-  readonly store = new DynamoStore<Employee>(Employee)
+  readonly store: DynamoStore<Employee>
+
+  constructor(dynamoDB: DynamoDB) {
+    this.store = new DynamoStore<Employee>(Employee, dynamoDB)
+  }
 
   ////////////
   // | READ |//
@@ -27,7 +32,7 @@ export class EmployeeService {
   }
 
   transactGetManyByEmail(...emailAddresses: string[]) {
-    return this.store.transactGet(emailAddresses.map(email => ({ email }))).exec()
+    return this.store.transactGet(emailAddresses.map((email) => ({ email }))).exec()
   }
 
   /////////////
@@ -35,11 +40,7 @@ export class EmployeeService {
   /////////////
 
   terminateEmployment(employee: Employee, dateOfNotice: FnsDate = new FnsDate()): Promise<void> {
-    return this.store
-      .update(employee.email, employee.id)
-      .updateAttribute('dateOfNotice')
-      .set(dateOfNotice)
-      .exec()
+    return this.store.update(employee.email, employee.id).updateAttribute('dateOfNotice').set(dateOfNotice).exec()
   }
 
   addAchievements(employee: Employee, achievements: Set<string>): Promise<void> {
@@ -56,8 +57,8 @@ export class EmployeeService {
 
     // find the indexes from the given achievements
     const indexes = achievements
-      .map(achievement => Array.from(employee.achievements!).findIndex(a => a === achievement))
-      .filter(ix => ix >= 0)
+      .map((achievement) => Array.from(employee.achievements!).findIndex((a) => a === achievement))
+      .filter((ix) => ix >= 0)
 
     if (indexes.length === 0) {
       return Promise.reject('')
@@ -78,11 +79,7 @@ export class EmployeeService {
 
   removeSkills(employee: Employee, skills: string[] | Set<string>): Promise<void> {
     // when using set, you can remove items by their value
-    return this.store
-      .update(employee.email, employee.id)
-      .updateAttribute('skills')
-      .removeFromSet(skills)
-      .exec()
+    return this.store.update(employee.email, employee.id).updateAttribute('skills').removeFromSet(skills).exec()
   }
 
   incrementTooLateInOfficeCounter(employee: Employee): Promise<void> {

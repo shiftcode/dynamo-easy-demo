@@ -1,9 +1,14 @@
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
 import { Project } from '../model'
 import { FnsDate } from '../static/fns-date'
 
 export class ProjectService {
-  readonly store = new DynamoStore<Project>(Project)
+  readonly store: DynamoStore<Project>
+
+  constructor(dynamoDB: DynamoDB) {
+    this.store = new DynamoStore<Project>(Project, dynamoDB)
+  }
 
   ////////////
   // | READ |//
@@ -29,11 +34,7 @@ export class ProjectService {
    */
   getByCreationDate(from: FnsDate, to: FnsDate): Promise<Project[]> {
     // when filtering a property which is neither HASH nor SORT key, you need scan as well.
-    return this.store
-      .scan()
-      .whereAttribute('creationDate')
-      .between(from, to)
-      .execFetchAll()
+    return this.store.scan().whereAttribute('creationDate').between(from, to).execFetchAll()
   }
 
   /**

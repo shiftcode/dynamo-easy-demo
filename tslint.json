@@ -8,6 +8,7 @@
   "rules": {
     "no-angle-bracket-type-assertion": false,
     "no-submodule-imports": [true, "aws-sdk", "rxjs/operators"],
+    "no-implicit-dependencies": [true, "dev"],
     "interface-name": [
       true,
       "never-prefix"

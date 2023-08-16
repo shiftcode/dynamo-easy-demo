@@ -1,3 +1,6 @@
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
+// tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
+import { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types/dist-types/middleware'
 import {
   BatchWriteRequest,
   LogLevel,
@@ -11,6 +14,7 @@ import { Employee, Project, TimeEntry } from './model'
 import { fnsDateIsoMapper } from './model/fns-date-iso.mapper'
 import { EmployeeService, ProjectService, TimeEntryService } from './services'
 import { AnonymousAuthService } from './services/anonymous-auth.service'
+import { CONFIG } from './static/config'
 import { FnsDate } from './static/fns-date'
 import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper'
 import { createLogReceiver } from './static/my-log-receiver.function'
@@ -25,10 +29,20 @@ updateDynamoEasyConfig({
   // used to receive all log statements from dynamo-easy
   logReceiver: createLogReceiver(LogLevel.INFO),
 })
+const dynamoDB = new DynamoDB({ region: CONFIG.AwsRegion })
+
+// dynamoDB.middlewareStack.add((next, context) => {
+//   return async (args: InitializeHandlerArguments<any>): Promise<InitializeHandlerOutput<any>> => {
+//     console.log(`args`, args)
+//     console.log(`context`, context)
+//     const response = await next(args)
+//     return response
+//   }
+// })
 
 async function write() {
-  const employeeService = new EmployeeService()
-  const timeEntryService = new TimeEntryService()
+  const employeeService = new EmployeeService(dynamoDB)
+  const timeEntryService = new TimeEntryService(dynamoDB)
 
   print('write employees and projects')
 
@@ -89,10 +103,7 @@ async function write() {
   ]
 
   // write many (up to 25) items of different tables in one call with the BatchWriteRequest
-  await new BatchWriteRequest()
-    .put(Project, projects)
-    .put(Employee, employees)
-    .exec()
+  await new BatchWriteRequest(dynamoDB).put(Project, projects).put(Employee, employees).exec()
 
   print('write time entries')
   const timeEntries = []
@@ -119,7 +130,7 @@ async function write() {
 
   // IF THE FIRST EMPLOYEE IS ABLE TO HACK && THE SECOND EMPLOYEE WAS NOT FIRED YET,
   // --> ADD JUMPING AS A SKILL TO THE SECOND EMPLOYEE
-  await new TransactWriteRequest()
+  await new TransactWriteRequest(dynamoDB)
     .transact(
       new TransactConditionCheck(Employee, 'first.employee@shiftcode.ch').onlyIfAttribute('skills').contains('hacking'),
       new TransactUpdate(Employee, 'second.employee@shiftcode.ch')
@@ -150,9 +161,9 @@ async function read() {
     sessionValidityEnsurer: new AnonymousAuthService().sessionValidityEnsurer,
   })
 
-  const employeeService = new EmployeeService()
-  const projectService = new ProjectService()
-  const timeEntryService = new TimeEntryService()
+  const employeeService = new EmployeeService(dynamoDB)
+  const projectService = new ProjectService(dynamoDB)
+  const timeEntryService = new TimeEntryService(dynamoDB)
 
   {
     print('\nemployees first month')
@@ -164,7 +175,7 @@ async function read() {
 
       const timeEntriesFirstMonth = await timeEntryService.getByEmployeeAndMonth(employee, monthToFetch)
 
-      const seconds = timeEntriesFirstMonth.map(t => t.duration).reduce(sum, 0)
+      const seconds = timeEntriesFirstMonth.map((t) => t.duration).reduce(sum, 0)
       print(
         `- ${rightPad(employee.name, 20)} worked ${leftPad(seconds, 7)} seconds in ${leftPad(
           monthToFetch.format('MMMM YYYY'),
@@ -213,8 +224,8 @@ async function read() {
     for (const project of projects) {
       const fromTo: [FnsDate, FnsDate] = [project.creationDate, new FnsDate().endOfMonth()]
       const timeEntries = await timeEntryService.getByProject(project, ...fromTo)
-      const seconds = timeEntries.map(t => t.duration).reduce(sum, 0)
-      const [from, to] = fromTo.map(m => m.format('YYYY-MM-DD'))
+      const seconds = timeEntries.map((t) => t.duration).reduce(sum, 0)
+      const [from, to] = fromTo.map((m) => m.format('YYYY-MM-DD'))
       print(
         `- ${rightPad(project.name, 20)}  ${rightPad(project.client, 15)}: ${leftPad(
           seconds,

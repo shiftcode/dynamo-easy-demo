@@ -1,3 +1,4 @@
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
 import { Employee, Project, TimeEntry, TimeEntryId } from '../model'
 import { ClientProject } from '../model/client-project.model'
@@ -6,7 +7,11 @@ import { DynamoIndexes } from '../static/dynamo-indexes'
 import { FnsDate } from '../static/fns-date'
 
 export class TimeEntryService {
-  readonly store = new DynamoStore<TimeEntry>(TimeEntry)
+  readonly store: DynamoStore<TimeEntry>
+
+  constructor(dynamoDB: DynamoDB) {
+    this.store = new DynamoStore<TimeEntry>(TimeEntry, dynamoDB)
+  }
 
   ////////////
   // | READ |//
@@ -57,9 +62,6 @@ export class TimeEntryService {
   }
 
   deleteMany(entries: TimeEntry[]): Promise<void> {
-    return this.store
-      .batchWrite()
-      .delete(entries)
-      .exec()
+    return this.store.batchWrite().delete(entries).exec()
   }
 }

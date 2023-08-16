@@ -1,0 +1,5 @@
+[profile sc]
+region = eu-central-1
+role_arn = arn:aws:iam::533186214163:role/shiftcodeMasterOrganizationAccessRole
+source_profile = default
+output = json
