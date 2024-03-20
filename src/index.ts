@@ -1,7 +1,7 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { fromCognitoIdentity } from '@aws-sdk/credential-provider-cognito-identity'
 // tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
-import { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types/dist-types/middleware'
+import { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types/dist-types/middleware.js'
 import {
   BatchWriteRequest,
   LogLevel,
@@ -11,16 +11,16 @@ import {
   updateDynamoEasyConfig,
 } from '@shiftcoders/dynamo-easy'
 import 'reflect-metadata' // needs to be imported before any models are used
-import { Employee, Project, TimeEntry } from './model'
-import { fnsDateIsoMapper } from './model/fns-date-iso.mapper'
-import { EmployeeService, ProjectService, TimeEntryService } from './services'
-import { AnonymousAuthService } from './services/anonymous-auth.service'
-import { CONFIG } from './static/config'
-import { FnsDate } from './static/fns-date'
-import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper'
-import { createLogReceiver } from './static/my-log-receiver.function'
-import { print } from './static/print.function'
-import { dynamoEasyDemoTableNameResolver } from './static/table-name-resolver.function'
+import { Employee, Project, TimeEntry } from './model/index.js'
+import { fnsDateIsoMapper } from './model/fns-date-iso.mapper.js'
+import { EmployeeService, ProjectService, TimeEntryService } from './services/index.js'
+import { AnonymousAuthService } from './services/anonymous-auth.service.js'
+import { CONFIG } from './static/config.js'
+import { FnsDate } from './static/fns-date.js'
+import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper.js'
+import { createLogReceiver } from './static/my-log-receiver.function.js'
+import { print } from './static/print.function.js'
+import { dynamoEasyDemoTableNameResolver } from './static/table-name-resolver.function.js'
 
 updateDynamoEasyConfig({
   // used to extend the table names with the stack name

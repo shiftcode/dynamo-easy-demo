@@ -1,4 +1,4 @@
-import { FnsDate } from '../static/fns-date'
+import { FnsDate } from '../static/fns-date.js'
 
 const SEPARATOR = '-'
 

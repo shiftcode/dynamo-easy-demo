@@ -1,7 +1,7 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
-import { Project } from '../model'
-import { FnsDate } from '../static/fns-date'
+import { Project } from '../model/index.js'
+import { FnsDate } from '../static/fns-date.js'
 
 export class ProjectService {
   readonly store: DynamoStore<Project>

@@ -1,7 +1,7 @@
 import { Model, PartitionKey, Property, SortKey } from '@shiftcoders/dynamo-easy'
-import { FnsDate } from '../static/fns-date'
-import { toCamelCase } from '../static/helper'
-import { fnsDateUnixMapper } from './fns-date-unix.mapper'
+import { FnsDate } from '../static/fns-date.js'
+import { toCamelCase } from '../static/helper.js'
+import { fnsDateUnixMapper } from './fns-date-unix.mapper.js'
 
 @Model({ tableName: 'projects' })
 export class Project {

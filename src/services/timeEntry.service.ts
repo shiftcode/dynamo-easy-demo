@@ -1,10 +1,10 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
-import { Employee, Project, TimeEntry, TimeEntryId } from '../model'
-import { ClientProject } from '../model/client-project.model'
-import { MonthEmail } from '../model/month-email.model'
-import { DynamoIndexes } from '../static/dynamo-indexes'
-import { FnsDate } from '../static/fns-date'
+import { Employee, Project, TimeEntry, TimeEntryId } from '../model/index.js'
+import { ClientProject } from '../model/client-project.model.js'
+import { MonthEmail } from '../model/month-email.model.js'
+import { DynamoIndexes } from '../static/dynamo-indexes.js'
+import { FnsDate } from '../static/fns-date.js'
 
 export class TimeEntryService {
   readonly store: DynamoStore<TimeEntry>

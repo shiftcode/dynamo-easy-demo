@@ -8,16 +8,16 @@ import {
   SortKey,
   Transient,
 } from '@shiftcoders/dynamo-easy'
-import { DynamoIndexes } from '../static/dynamo-indexes'
-import { FnsDate } from '../static/fns-date'
-import { clientProjectMapper } from './client-project.mapper'
-import { ClientProject } from './client-project.model'
-import { Employee } from './employee.model'
-import { monthEmailMapper } from './month-email.mapper'
-import { MonthEmail } from './month-email.model'
-import { Project } from './project.model'
-import { timeEntryIdMapper } from './time-entry-id.mapper'
-import { TimeEntryId } from './time-entry-id.model'
+import { DynamoIndexes } from '../static/dynamo-indexes.js'
+import { FnsDate } from '../static/fns-date.js'
+import { clientProjectMapper } from './client-project.mapper.js'
+import { ClientProject } from './client-project.model.js'
+import { Employee } from './employee.model.js'
+import { monthEmailMapper } from './month-email.mapper.js'
+import { MonthEmail } from './month-email.model.js'
+import { Project } from './project.model.js'
+import { timeEntryIdMapper } from './time-entry-id.mapper.js'
+import { TimeEntryId } from './time-entry-id.model.js'
 
 // unique by monthEmail + startDate or clientProject + unixTsUserId
 // means an employee can only have one time entry at a starting time

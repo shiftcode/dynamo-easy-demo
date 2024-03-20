@@ -1,5 +1,5 @@
-import { FnsDate } from '../static/fns-date'
-import { leftPad } from '../static/helper'
+import { FnsDate } from '../static/fns-date.js'
+import { leftPad } from '../static/helper.js'
 
 const MULTIPLIER_E = 10
 

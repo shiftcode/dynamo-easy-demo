@@ -1,7 +1,7 @@
 import { MapperForType, StringAttribute } from '@shiftcoders/dynamo-easy'
-import { ClientProject } from './client-project.model'
+import { ClientProject } from './client-project.model.js'
 
 export const clientProjectMapper: MapperForType<ClientProject, StringAttribute> = {
-  fromDb: attributeValue => ClientProject.parse(attributeValue.S),
-  toDb: propertyValue => ({ S: `${ClientProject.unparse(propertyValue)}` }),
+  fromDb: (attributeValue) => ClientProject.parse(attributeValue.S),
+  toDb: (propertyValue) => ({ S: `${ClientProject.unparse(propertyValue)}` }),
 }

@@ -1,4 +1,4 @@
-import { addSeconds, endOfMonth, format, parse } from 'date-fns'
+import { addSeconds, endOfMonth, format, fromUnixTime, parse } from 'date-fns'
 
 const FMT_YEAR_MONTH = 'YYYYMM'
 
@@ -33,8 +33,10 @@ export class FnsDate {
       this.date = new Date()
     } else if (date instanceof Date) {
       this.date = date
+    } else if (typeof date === 'number') {
+      this.date = fromUnixTime(date)
     } else {
-      this.date = parse(date)
+      this.date = parse(date, 'yyyy-MM-dd', new Date())
     }
   }
 
