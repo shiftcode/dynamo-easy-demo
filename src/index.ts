@@ -1,4 +1,5 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { fromCognitoIdentity } from '@aws-sdk/credential-provider-cognito-identity'
 // tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
 import { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types/dist-types/middleware'
 import {
@@ -29,7 +30,12 @@ updateDynamoEasyConfig({
   // used to receive all log statements from dynamo-easy
   logReceiver: createLogReceiver(LogLevel.INFO),
 })
-const dynamoDB = new DynamoDB({ region: CONFIG.AwsRegion })
+const dynamoDB = new DynamoDB({
+  region: CONFIG.AwsRegion,
+  credentials: fromCognitoIdentity({
+    identityId: CONFIG.CognitoIdentityPoolId,
+  }),
+})
 
 // dynamoDB.middlewareStack.add((next, context) => {
 //   return async (args: InitializeHandlerArguments<any>): Promise<InitializeHandlerOutput<any>> => {

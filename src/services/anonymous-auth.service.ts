@@ -1,5 +1,3 @@
-import { CONFIG } from '../static/config'
-
 export class AnonymousAuthService {
   constructor() {}
 
