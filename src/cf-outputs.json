@@ -1,20 +1,14 @@
 [
-    {
-        "OutputKey": "accessKeyId",
-        "OutputValue": "AKIAXYJC77EJUVP3L2PT"
-    },
-    {
-        "OutputKey": "secretAccessKey",
-        "OutputValue": "mEeI+f6rt8lYOEJCPwCXve6GxuI6Dj9c6/fzmzp5"
-    },
-    {
-        "OutputKey": "AwsRegion",
-        "OutputValue": "eu-central-1",
-        "ExportName": "AwsRegion"
-    },
-    {
-        "OutputKey": "CfStackNameServices",
-        "OutputValue": "dynamo-easy-demo",
-        "ExportName": "CfStackNameServices"
-    }
+  {
+    "OutputKey": "CognitoIdentityPoolId",
+    "OutputValue": "eu-central-1:b473a6fd-5676-4b15-a2ed-7169427cb3a2"
+  },
+  {
+    "OutputKey": "AwsRegion",
+    "OutputValue": "eu-central-1"
+  },
+  {
+    "OutputKey": "CfStackNameServices",
+    "OutputValue": "dynamo-easy-demo"
+  }
 ]
