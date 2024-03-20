@@ -25,10 +25,8 @@
     "lint": "tslint -t codeFrame '{src, test}/**/*.ts' --project ./tsconfig.json --fix",
     "build": "tsc",
     "start": "ts-node ./src/index.ts",
-    "deploy": "npm run build && cdk deploy && npm run generate-outputs",
-    "generate-outputs": "aws cloudformation --region eu-central-1 describe-stacks --stack-name dynamo-easy-demo --query 'Stacks[0].Outputs' > src/cf-outputs.json",
-    "iac": "ts-node src/app.ts",
-    "synth": "npm run build && cdk synth --app ./dist/app.js"
+    "deploy": "aws cloudformation deploy --template-file ./infrastructure.yml --stack-name dynamo-easy-demo --capabilities CAPABILITY_NAMED_IAM && npm run generate-outputs",
+    "generate-outputs": "aws cloudformation --region eu-central-1 describe-stacks --stack-name dynamo-easy-demo --query 'Stacks[0].Outputs' > src/cf-outputs.json"
   },
   "husky": {
     "hooks": {
@@ -55,8 +53,6 @@
   },
   "devDependencies": {
     "@types/node": "^18.17.5",
-    "aws-cdk": "^2.92.0",
-    "aws-cdk-lib": "^2.92.0",
     "constructs": "^10.2.69",
     "husky": "^1.3.1",
     "lint-staged": "^8.1.0",

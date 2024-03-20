@@ -20,10 +20,6 @@ This demo uses a cognito identity pool for unauthenticated read access to those 
 It's meant for you to play around with it directly in stackblitz or to clone it and test it out on your own stack.
 
 ## infrastructure
-You can deploy the whole stack trough CloudFormation (leveraging aws-cdk), execute the following to deploy a Stack to your account.
-- `npm i`
-- ?? update config to define which account ??
-- `cdk bootstrap`
-- `npm run deploy` (if you want you can run `npm run synth` to see the CloudFormation template in the console)
+You can deploy the whole stack trough CloudFormation - see infrastructure.yml for the essential resource definitions and package.json for the scripts involved.
 
 # Made with ❤ by [shiftcode.ch](https://www.shiftcode.ch)
