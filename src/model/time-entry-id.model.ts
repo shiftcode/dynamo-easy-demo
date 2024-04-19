@@ -1,5 +1,5 @@
-import { FnsDate } from '../static/fns-date'
-import { leftPad } from '../static/helper'
+import { FnsDate } from '../static/fns-date.js'
+import { leftPad } from '../static/helper.js'
 
 const MULTIPLIER_E = 10
 
@@ -17,7 +17,7 @@ export class TimeEntryId {
   }
 
   static unparse({ date, employeeId }: TimeEntryId): string {
-    return `${date.UNIX}${leftPad(employeeId, MULTIPLIER_E, '0')}`
+    return `${date.UNIX_MS}${leftPad(employeeId, MULTIPLIER_E, '0')}`
   }
 
   constructor(date: FnsDate, employeeId: number = 0) {

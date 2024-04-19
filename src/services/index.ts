@@ -1,3 +1,3 @@
-export * from './employee.service'
-export * from './project.service'
-export * from './timeEntry.service'
+export * from './employee.service.js'
+export * from './project.service.js'
+export * from './timeEntry.service.js'

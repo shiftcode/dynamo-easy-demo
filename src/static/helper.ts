@@ -1,4 +1,4 @@
-import { FnsDate } from './fns-date'
+import { FnsDate } from './fns-date.js'
 
 export const sum = (u: number, i: number) => u + i
 
@@ -10,9 +10,9 @@ export const createRandomDateFn = (from: FnsDate, to: FnsDate) => {
 
 export const toCamelCase = (txt: string) =>
   txt
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, l => `-${l}`)
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (l) => `-${l}`)
     .split(/[-\s_.]/)
-    .filter(i => i !== '')
+    .filter((i) => i !== '')
     .reduce((u, i, ix) => {
       return ix === 0 ? i.toLowerCase() : u + i.substring(0, 1).toUpperCase() + i.substring(1).toLowerCase()
     }, '')

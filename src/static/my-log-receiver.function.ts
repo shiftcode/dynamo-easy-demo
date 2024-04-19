@@ -9,7 +9,7 @@ const LL = {
 export function createLogReceiver(maxLevel: LogLevel) {
   return (logInfo: LogInfo) => {
     if (logInfo.level <= maxLevel) {
-      const msg = `[${LL[logInfo.level]}] ${new Date(logInfo.timestamp).toISOString()} ${logInfo.className} (${
+      const msg = `[${(LL as any)[logInfo.level]}] ${new Date(logInfo.timestamp).toISOString()} ${logInfo.className} (${
         logInfo.modelConstructor
       }): ${logInfo.message}`
       console.debug(msg, logInfo.data)

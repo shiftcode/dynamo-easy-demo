@@ -1,5 +1,5 @@
 import { CollectionProperty, DateProperty, Model, PartitionKey } from '@shiftcoders/dynamo-easy'
-import { FnsDate } from '../static/fns-date'
+import { FnsDate } from '../static/fns-date.js'
 
 @Model({ tableName: 'employees' })
 export class Employee {
