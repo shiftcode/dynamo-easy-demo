@@ -14,7 +14,6 @@ import { createDynamoEasyConfig } from './create-dynamo-easy-config.js'
 
 createDynamoEasyConfig()
 
-// FIXME replace with actual values
 const dynamoDB = new DynamoDB({
   region: CONFIG.AwsRegion,
   credentials: { accessKeyId: CONFIG.accessKeyId, secretAccessKey: CONFIG.secretAccessKey },

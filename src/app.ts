@@ -1,4 +1,4 @@
-import { App, CfnOutput } from 'aws-cdk-lib'
+import { App } from 'aws-cdk-lib'
 import { CdkAppStack } from './app-stack.js'
 
 export interface StackConfig {
