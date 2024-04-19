@@ -8,9 +8,10 @@ interface CfOutput {
 type CfOutputs = CfOutput[]
 
 export interface Config {
+  accessKeyId: string
+  secretAccessKey: string
   CfStackNameServices: string
   AwsRegion: string
-  CognitoIdentityPoolId: string
 }
 
 export const CONFIG: Config = <Config>(

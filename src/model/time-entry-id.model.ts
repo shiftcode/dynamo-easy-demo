@@ -17,7 +17,7 @@ export class TimeEntryId {
   }
 
   static unparse({ date, employeeId }: TimeEntryId): string {
-    return `${date.UNIX}${leftPad(employeeId, MULTIPLIER_E, '0')}`
+    return `${date.UNIX_MS}${leftPad(employeeId, MULTIPLIER_E, '0')}`
   }
 
   constructor(date: FnsDate, employeeId: number = 0) {

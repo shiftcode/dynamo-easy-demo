@@ -15,11 +15,16 @@ We use three models each with its table
 For each model there is a service to execute different operations on the tables.
 Write operations are not permitted with the applied IAM Policy. If you want to try these operations out deploy the stack to your own AWS account.
   
-## credentials / security
-This demo uses a cognito identity pool for unauthenticated read access to those 3 tables only - which means no write operations will succeed.
+## Credentials / Security
+This demo uses an AWS Access Key (crated through the CloudFormation stack) to have read access to those 3 tables only -
+which means no write operations will succeed.
 It's meant for you to play around with it directly in stackblitz or to clone it and test it out on your own stack.
 
-## infrastructure
-You can deploy the whole stack trough CloudFormation - see infrastructure.yml for the essential resource definitions and package.json for the scripts involved.
+## Infrastructure
+You can deploy the whole stack trough `aws-cdk`. Just run `npm run deploy` to deploy the CloudFormation Stack to your
+account and get the relevant `Outputs`. Ensure that the `aws-cdk` is able to resolve credentials with enough permissions
+to create a stack.
+To fill the `DynamoDB` tables with some sample data run `npm run init-data` and then run `npm run start` to see the
+output.
 
 # Made with ❤ by [shiftcode.ch](https://www.shiftcode.ch)
