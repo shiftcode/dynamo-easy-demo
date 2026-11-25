@@ -4,8 +4,7 @@
  */
 const config = {
   'package.json': ['npx sort-package-json'],
-  'src/**/!(*.spec).ts': ['tslint --project ./tsconfig.json -t codeFrame --fix'],
-  '*': ['npx prettier --write --ignore-unknown'],
+  '*': ['eslint --fix --no-warn-ignored', 'npx prettier --write --ignore-unknown'],
 }
 
 export default config
