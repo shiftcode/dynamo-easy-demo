@@ -7,10 +7,11 @@
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "importHelpers": true,
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap":  true,
+    "sourceMap": true,
+    "rootDir": "./src",
     "outDir": "./dist/",
     "skipLibCheck": true
-  }
+  },
+  "include": ["src"]
 }
