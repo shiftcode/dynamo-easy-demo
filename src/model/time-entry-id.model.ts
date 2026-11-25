@@ -12,7 +12,7 @@ export class TimeEntryId {
 
   static parse(value: string): TimeEntryId {
     const employeeId = parseInt(value.substr(value.length - MULTIPLIER_E), 10)
-    const date = new FnsDate(value.substr(0, value.length - MULTIPLIER_E))
+    const date = new FnsDate(parseInt(value.substring(0, value.length - MULTIPLIER_E), 10))
     return new TimeEntryId(date, employeeId)
   }
 

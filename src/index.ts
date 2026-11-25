@@ -185,7 +185,7 @@ async function read() {
       const seconds = timeEntriesFirstMonth.map((t) => t.duration).reduce(sum, 0)
       print(
         `- ${rightPad(employee.name, 20)} worked ${leftPad(seconds, 7)} seconds in ${leftPad(
-          monthToFetch.format('MMMM YYYY'),
+          monthToFetch.format('MMMM yyyy'),
           20
         )}.`
       )
@@ -211,7 +211,7 @@ async function read() {
       new FnsDate('2018-06-21')
     )
     for (const proj of projectsStartedInSpring) {
-      print(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('YYYY-MM-DD')}`)
+      print(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('yyyy-MM-dd')}`)
     }
   }
 
@@ -232,7 +232,7 @@ async function read() {
       const fromTo: [FnsDate, FnsDate] = [project.creationDate, new FnsDate().endOfMonth()]
       const timeEntries = await timeEntryService.getByProject(project, ...fromTo)
       const seconds = timeEntries.map((t) => t.duration).reduce(sum, 0)
-      const [from, to] = fromTo.map((m) => m.format('YYYY-MM-DD'))
+      const [from, to] = fromTo.map((m) => m.format('yyyy-MM-dd'))
       print(
         `- ${rightPad(project.name, 20)}  ${rightPad(project.client, 15)}: ${leftPad(
           seconds,

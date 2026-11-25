@@ -1,6 +1,6 @@
-import { addSeconds, endOfMonth, format, fromUnixTime, parse } from 'date-fns'
+import { addSeconds, endOfMonth, format, parseISO } from 'date-fns'
 
-const FMT_YEAR_MONTH = 'YYYYMM'
+const FMT_YEAR_MONTH = 'yyyyMM'
 
 /**
  * Immutable Date Object with helper functions
@@ -34,9 +34,9 @@ export class FnsDate {
     } else if (date instanceof Date) {
       this.date = date
     } else if (typeof date === 'number') {
-      this.date = fromUnixTime(date)
+      this.date = new Date(date)
     } else {
-      this.date = parse(date, 'yyyy-MM-dd', new Date())
+      this.date = parseISO(date)
     }
   }
 
