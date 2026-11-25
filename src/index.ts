@@ -12,8 +12,8 @@ import 'reflect-metadata' // needs to be imported before any models are used
 import { Employee, Project, TimeEntry } from './model/index.js'
 import { fnsDateIsoMapper } from './model/fns-date-iso.mapper.js'
 import { EmployeeService, ProjectService, TimeEntryService } from './services/index.js'
-import { AnonymousAuthService } from './services/anonymous-auth.service.js'
 import { CONFIG } from './static/config.js'
+import { addEnsureSessionMiddleware } from './static/ensure-session.middleware.js'
 import { FnsDate } from './static/fns-date.js'
 import { createRandomDateFn, leftPad, rightPad, sum } from './static/helper.js'
 import { createLogReceiver } from './static/my-log-receiver.function.js'
@@ -47,6 +47,11 @@ const dynamoDB = new DynamoDB(
         }),
       },
 )
+
+if (!localEndpoint) {
+  // make sure the aws credentials are set and valid before making a call to dynamoDb
+  addEnsureSessionMiddleware(dynamoDB)
+}
 
 async function write() {
   const employeeService = new EmployeeService(dynamoDB)
@@ -162,14 +167,6 @@ async function write() {
 }
 
 async function read() {
-  // set aws config before instantiating DynamoStore
-  // (which itself creates DynamoDB instance from AWS which needs the config)
-  updateDynamoEasyConfig({
-    // used to make sure the aws credentials are set and valid before making a call to dynamoDb
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- showcases the option, still supported
-    sessionValidityEnsurer: new AnonymousAuthService().sessionValidityEnsurer,
-  })
-
   const employeeService = new EmployeeService(dynamoDB)
   const projectService = new ProjectService(dynamoDB)
   const timeEntryService = new TimeEntryService(dynamoDB)
