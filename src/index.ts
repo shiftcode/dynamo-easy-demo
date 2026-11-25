@@ -1,5 +1,5 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
-import { fromCognitoIdentity } from '@aws-sdk/credential-provider-cognito-identity'
+import { fromCognitoIdentityPool } from '@aws-sdk/credential-provider-cognito-identity'
 // tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
 import { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types/dist-types/middleware.js'
 import {
@@ -32,8 +32,9 @@ updateDynamoEasyConfig({
 })
 const dynamoDB = new DynamoDB({
   region: CONFIG.AwsRegion,
-  credentials: fromCognitoIdentity({
-    identityId: CONFIG.CognitoIdentityPoolId,
+  credentials: fromCognitoIdentityPool({
+    identityPoolId: CONFIG.CognitoIdentityPoolId,
+    clientConfig: { region: CONFIG.AwsRegion },
   }),
 })
 
