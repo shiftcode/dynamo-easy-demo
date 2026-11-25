@@ -4,25 +4,45 @@
 
 This project serves as a showcase how [dynamo-easy](https://github.com/shiftcode/dynamo-easy) can be used.
 
-Imagine a system where every employee of a company logs his work time per project with a start time and duration.
-We use three models each with its table
+Imagine a system where every employee of a company logs their work time per project with a start time and duration.
+There are three models, each with its own table and a service in `src/services`: `Project`, `Employee` and `TimeEntry`.
 
-- Project
+`src/index.ts` contains two demo flows:
 
-- Employee
+- `read()` – queries, scans, gets and index lookups. Always runs.
+- `write()` – batch writes, updates, transactions. Only runs when `DEMO_WRITE=true` (or `1`) is set.
 
-- TimeEntries
+## Getting started
 
-For each model there is a service to execute different operations on the tables.
-Write operations are not permitted with the applied IAM Policy. If you want to try these operations out deploy the stack to your own AWS account.
+Requires Node.js >= 22. Run `npm install`, then pick one of the following setups.
 
-## credentials / security
+### Public demo stack (read only)
 
-This demo uses a cognito identity pool for unauthenticated read access to those 3 tables only - which means no write operations will succeed.
-It's meant for you to play around with it directly in stackblitz or to clone it and test it out on your own stack.
+```sh
+npm start
+```
 
-## infrastructure
+The stack in `eu-central-1` grants unauthenticated read access to the three tables via a Cognito identity pool, so write operations fail.
 
-You can deploy the whole stack trough CloudFormation - see infrastructure.yml for the essential resource definitions and package.json for the scripts involved.
+### Local DynamoDB with Docker
+
+The image in `local-dynamodb/` creates the three tables (`local-dynamodb/tables/*.json`, mirroring `infrastructure.yml`).
+Setting `DYNAMO_ENDPOINT` makes the demo use that endpoint instead of the Cognito credentials.
+
+```sh
+docker build -t dynamo-easy-demo-db local-dynamodb
+docker run --rm -d --name dynamo-easy-demo-db -p 8000:8000 dynamo-easy-demo-db
+
+DYNAMO_ENDPOINT=http://localhost:8000 DEMO_WRITE=true npm start
+
+docker stop dynamo-easy-demo-db # all data is gone
+```
+
+Every container starts with empty tables, so run with `DEMO_WRITE=true` at least once. Each further write run adds more random time entries.
+
+### Your own AWS stack
+
+`npm run deploy` deploys `infrastructure.yml` via CloudFormation and writes the stack outputs to `src/cf-outputs.json`.
+The anonymous Cognito role only gets read permissions; to use `DEMO_WRITE=true`, also grant it `dynamodb:PutItem`, `UpdateItem`, `BatchWriteItem` and `ConditionCheckItem`.
 
 ## Made with ❤ by [shiftcode.ch](https://www.shiftcode.ch)

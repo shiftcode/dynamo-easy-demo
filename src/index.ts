@@ -28,25 +28,26 @@ updateDynamoEasyConfig({
   // used to receive all log statements from dynamo-easy
   logReceiver: createLogReceiver(LogLevel.INFO),
 })
-const dynamoDB = new DynamoDB({
-  region: CONFIG.AwsRegion,
-  credentials: fromCognitoIdentityPool({
-    identityPoolId: CONFIG.CognitoIdentityPoolId,
-    clientConfig: { region: CONFIG.AwsRegion },
-  }),
-})
 
-// import type { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types'
-// dynamoDB.middlewareStack.add((next, context) => {
-//   return async (args: InitializeHandlerArguments<any>): Promise<InitializeHandlerOutput<any>> => {
-//     console.log(`args`, args)
-//     console.log(`context`, context)
-//     const response = await next(args)
-//     return response
-//   }
-// })
+const localEndpoint = process.env['DYNAMO_ENDPOINT']
+const writeEnabled = ['true', '1'].includes(process.env['DEMO_WRITE']?.toLowerCase() ?? '')
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- only called when you deploy your own stack (see bottom of file)
+const dynamoDB = new DynamoDB(
+  localEndpoint
+    ? {
+        region: 'us-east-1',
+        endpoint: localEndpoint,
+        credentials: { accessKeyId: 'local', secretAccessKey: 'local' },
+      }
+    : {
+        region: CONFIG.AwsRegion,
+        credentials: fromCognitoIdentityPool({
+          identityPoolId: CONFIG.CognitoIdentityPoolId,
+          clientConfig: { region: CONFIG.AwsRegion },
+        }),
+      },
+)
+
 async function write() {
   const employeeService = new EmployeeService(dynamoDB)
   const timeEntryService = new TimeEntryService(dynamoDB)
@@ -244,9 +245,10 @@ async function read() {
   }
 }
 
-// write will only work if you deploy the stack to your own AWS account and add an appropriate IAM Policy.
-// await write()
-// print('\n\nDONE')
+if (writeEnabled) {
+  await write()
+  print('\n\nWRITE DONE')
+}
 
 await read()
 print('\n\nDONE')

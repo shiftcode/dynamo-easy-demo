@@ -1,0 +1,12 @@
+{
+  "TableName": "dynamo-easy-demo-projects",
+  "AttributeDefinitions": [
+    { "AttributeName": "clientSlug", "AttributeType": "S" },
+    { "AttributeName": "slug", "AttributeType": "S" }
+  ],
+  "KeySchema": [
+    { "AttributeName": "clientSlug", "KeyType": "HASH" },
+    { "AttributeName": "slug", "KeyType": "RANGE" }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}
