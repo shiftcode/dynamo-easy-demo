@@ -28,7 +28,7 @@ export class TimeEntry {
   // --> blacklist
   @Transient()
   get uniqueIdentifier(): string {
-    return `${this.monthEmail}${this.startDate.ISO}`
+    return MonthEmail.unparse(this.monthEmail) + this.startDate.ISO
   }
 
   // if you want a complex type as PartitionKey or SortKey
@@ -63,7 +63,7 @@ export class TimeEntry {
     startDate: FnsDate,
     duration: number,
     userId: number,
-    userEmail: string
+    userEmail: string,
   ) {
     this.monthEmail = new MonthEmail(startDate, userEmail)
     this.startDate = startDate

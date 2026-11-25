@@ -1,7 +1,5 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-provider-cognito-identity'
-// tslint:disable-next-line:no-implicit-dependencies no-submodule-imports
-import { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types/dist-types/middleware.js'
 import {
   BatchWriteRequest,
   LogLevel,
@@ -38,6 +36,7 @@ const dynamoDB = new DynamoDB({
   }),
 })
 
+// import type { InitializeHandlerArguments, InitializeHandlerOutput } from '@aws-sdk/types'
 // dynamoDB.middlewareStack.add((next, context) => {
 //   return async (args: InitializeHandlerArguments<any>): Promise<InitializeHandlerOutput<any>> => {
 //     console.log(`args`, args)
@@ -47,6 +46,7 @@ const dynamoDB = new DynamoDB({
 //   }
 // })
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- only called when you deploy your own stack (see bottom of file)
 async function write() {
   const employeeService = new EmployeeService(dynamoDB)
   const timeEntryService = new TimeEntryService(dynamoDB)
@@ -60,7 +60,7 @@ async function write() {
       'First Employee',
       new FnsDate('2018-01-01'),
       new Set(['hacking']),
-      new Set(['first employee'])
+      new Set(['first employee']),
     ),
     new Employee(
       2,
@@ -68,7 +68,7 @@ async function write() {
       'Second Employee',
       new FnsDate('2018-02-01'),
       new Set(['hacking']),
-      new Set(['staying sober for one week'])
+      new Set(['staying sober for one week']),
     ),
     new Employee(
       3,
@@ -76,14 +76,14 @@ async function write() {
       'Third Employee',
       new FnsDate('2018-02-01'),
       new Set(['sleeping']),
-      new Set(['singing a song'])
+      new Set(['singing a song']),
     ),
     new Employee(
       4,
       'fourth.employee@shiftcode.ch',
       'Fourth Employee',
       new FnsDate('2018-02-01'),
-      new Set(['sleeping', 'hacking', 'table tennis'])
+      new Set(['sleeping', 'hacking', 'table tennis']),
     ),
     new Employee(
       5,
@@ -91,7 +91,7 @@ async function write() {
       'Fifth Employee',
       new FnsDate('2018-04-04'),
       new Set(['eating marzipan']),
-      new Set(['eating 500g marzipan in 10 minutes'])
+      new Set(['eating 500g marzipan in 10 minutes']),
     ),
     new Employee(
       6,
@@ -99,7 +99,7 @@ async function write() {
       'Sixth Employee',
       new FnsDate('2018-08-01'),
       new Set(['drinking coffee']),
-      new Set(['sixth employee'])
+      new Set(['sixth employee']),
     ),
   ]
   const projects: Project[] = [
@@ -119,7 +119,7 @@ async function write() {
       // randomly create some time entries per employee and project
       const dateCreator = createRandomDateFn(
         emp.employment.isAfter(pro.creationDate) ? emp.employment : pro.creationDate,
-        new FnsDate('2018-08-31')
+        new FnsDate('2018-08-31'),
       )
       const t = Math.random() * 10
       for (let i = 0; i < t; i++) {
@@ -144,7 +144,7 @@ async function write() {
         .updateAttribute('skills')
         .add(['jumping'])
         .onlyIfAttribute('dateOfNotice')
-        .null()
+        .null(),
     )
     .exec()
 
@@ -154,7 +154,7 @@ async function write() {
   await Promise.all([
     employeeService.terminateEmployment(emp5, new FnsDate('2018-08-31')),
     employeeService.removeAchievement(emp5, ['sixth employee']),
-    employeeService.removeSkills(emp5, <Set<string>>emp5.skills),
+    employeeService.removeSkills(emp5, emp5.skills ?? []),
     employeeService.addAchievements(emp5, new Set(['getting fired'])),
     employeeService.addSkills(employees[0], new Set(['firing DAUs'])),
   ])
@@ -165,6 +165,7 @@ async function read() {
   // (which itself creates DynamoDB instance from AWS which needs the config)
   updateDynamoEasyConfig({
     // used to make sure the aws credentials are set and valid before making a call to dynamoDb
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- showcases the option, still supported
     sessionValidityEnsurer: new AnonymousAuthService().sessionValidityEnsurer,
   })
 
@@ -186,8 +187,8 @@ async function read() {
       print(
         `- ${rightPad(employee.name, 20)} worked ${leftPad(seconds, 7)} seconds in ${leftPad(
           monthToFetch.format('MMMM yyyy'),
-          20
-        )}.`
+          20,
+        )}.`,
       )
     }
   }
@@ -195,11 +196,11 @@ async function read() {
   {
     print(`\nthe first Employee`)
     const emp: Employee | null = await employeeService.getByEmail('first.employee@shiftcode.ch')
-    Object.entries(emp || {}).forEach(([key, val]) => {
+    Object.entries(emp ?? {}).forEach(([key, val]: [string, unknown]) => {
       print(
-        `  ${rightPad(key, 25)}  (${rightPad(val.constructor.name + ')', 10)} ${
-          val instanceof Set ? Array.from(val).join(' | ') : val
-        }`
+        `  ${rightPad(key, 25)}  (${rightPad(`${(val as object).constructor.name})`, 10)} ${
+          val instanceof Set ? Array.from(val).join(' | ') : String(val)
+        }`,
       )
     })
   }
@@ -208,7 +209,7 @@ async function read() {
     print(`\nprojects started in spring`)
     const projectsStartedInSpring = await projectService.getByCreationDate(
       new FnsDate('2018-03-20'),
-      new FnsDate('2018-06-21')
+      new FnsDate('2018-06-21'),
     )
     for (const proj of projectsStartedInSpring) {
       print(`- '${proj.name}' from ${proj.client} started on ${proj.creationDate.format('yyyy-MM-dd')}`)
@@ -219,7 +220,7 @@ async function read() {
     print('\nprojects from shiftcode')
     const projectsFromShiftcode = await projectService.getAllByClient('shiftcodeGmbH')
     for (const proj of projectsFromShiftcode) {
-      print(`- ${proj.name} (${proj.slug}) ${proj.creationDate}`)
+      print(`- ${proj.name} (${proj.slug}) ${proj.creationDate.ISO}`)
     }
   }
 
@@ -236,14 +237,16 @@ async function read() {
       print(
         `- ${rightPad(project.name, 20)}  ${rightPad(project.client, 15)}: ${leftPad(
           seconds,
-          10
-        )} seconds | ${from} - ${to}`
+          10,
+        )} seconds | ${from} - ${to}`,
       )
     }
   }
 }
 
 // write will only work if you deploy the stack to your own AWS account and add an appropriate IAM Policy.
-// write().then(() => print('\n\nDONE'))
+// await write()
+// print('\n\nDONE')
 
-read().then(() => print('\n\nDONE'))
+await read()
+print('\n\nDONE')

@@ -37,7 +37,7 @@ export class Employee {
     name: string,
     employment: FnsDate,
     skills?: Set<string>,
-    achievements?: Set<string>
+    achievements?: Set<string>,
   ) {
     this.id = id
     this.email = email

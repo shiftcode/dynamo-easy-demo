@@ -13,6 +13,7 @@ export interface Config {
   CognitoIdentityPoolId: string
 }
 
-export const CONFIG: Config = <Config>(
-  (<CfOutputs>configData).reduce((u, i) => ({ ...u, [i.OutputKey]: i.OutputValue }), {})
-)
+export const CONFIG: Config = (configData as CfOutputs).reduce(
+  (u, i) => ({ ...u, [i.OutputKey]: i.OutputValue }),
+  {},
+) as Config

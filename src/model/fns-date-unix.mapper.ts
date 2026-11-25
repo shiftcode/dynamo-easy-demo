@@ -6,5 +6,5 @@ import { FnsDate } from '../static/fns-date.js'
  */
 export const fnsDateUnixMapper: MapperForType<FnsDate, NumberAttribute> = {
   fromDb: (attributeValue) => new FnsDate(parseInt(attributeValue.N, 10)),
-  toDb: (propertyValue) => ({ N: `${propertyValue.UNIX}` }),
+  toDb: (propertyValue) => ({ N: propertyValue.UNIX.toString() }),
 }

@@ -22,7 +22,7 @@ export class FnsDate {
 
   static fromYearMonth(yearmonth: number | string): FnsDate {
     const m = /^(\d{4})(\d{2})$/.exec(yearmonth.toString())
-    if (m && m.length === 3) {
+    if (m?.length === 3) {
       return new FnsDate(`${m[1]}-${m[2]}-01`)
     }
     throw new Error('given number is not a year-month number')

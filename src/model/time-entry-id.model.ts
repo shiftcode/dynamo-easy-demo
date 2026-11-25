@@ -11,13 +11,13 @@ export class TimeEntryId {
   // so we do simple string operations to concat two numbers to one
 
   static parse(value: string): TimeEntryId {
-    const employeeId = parseInt(value.substr(value.length - MULTIPLIER_E), 10)
+    const employeeId = parseInt(value.substring(value.length - MULTIPLIER_E), 10)
     const date = new FnsDate(parseInt(value.substring(0, value.length - MULTIPLIER_E), 10))
     return new TimeEntryId(date, employeeId)
   }
 
   static unparse({ date, employeeId }: TimeEntryId): string {
-    return `${date.UNIX}${leftPad(employeeId, MULTIPLIER_E, '0')}`
+    return date.UNIX.toString() + leftPad(employeeId, MULTIPLIER_E, '0')
   }
 
   constructor(date: FnsDate, employeeId: number = 0) {

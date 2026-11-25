@@ -52,16 +52,17 @@ export class EmployeeService {
 
   removeAchievement(employee: Employee, achievements: string[]): Promise<void> {
     if (!employee.achievements) {
-      return Promise.reject('Employee does not contain any achievements')
+      return Promise.reject(new Error('Employee does not contain any achievements'))
     }
+    const existingAchievements = Array.from(employee.achievements)
 
     // find the indexes from the given achievements
     const indexes = achievements
-      .map((achievement) => Array.from(employee.achievements!).findIndex((a) => a === achievement))
+      .map((achievement) => existingAchievements.findIndex((a) => a === achievement))
       .filter((ix) => ix >= 0)
 
     if (indexes.length === 0) {
-      return Promise.reject('')
+      return Promise.reject(new Error('Employee does not contain any of the given achievements'))
     }
 
     return this.store
@@ -73,7 +74,7 @@ export class EmployeeService {
 
   addSkills(employee: Employee, skills: Set<string>): Promise<void> {
     const chain = update2(Employee, 'skills')
-    const operation = !!employee.skills ? chain.add(skills) : chain.set(skills)
+    const operation = employee.skills ? chain.add(skills) : chain.set(skills)
     return this.update(employee, operation)
   }
 
