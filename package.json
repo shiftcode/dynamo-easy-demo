@@ -51,5 +51,15 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=22"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.10.0"
+    }
   }
 }

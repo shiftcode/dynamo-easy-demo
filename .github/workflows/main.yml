@@ -1,0 +1,46 @@
+name: main
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Source'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 'Setup Node'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: 'Install NPM dependencies'
+        run: npm ci --prefer-offline --no-audit --no-fund
+        env:
+          HUSKY: 0
+
+      - name: 'Check Formatting'
+        run: npx prettier --check .
+
+      - name: 'Check Linting'
+        run: npx eslint .
+
+      - name: 'Build'
+        run: npm run build
+
+      - name: 'Start local DynamoDB'
+        run: |
+          docker build -t dynamo-easy-demo-db local-dynamodb
+          docker run --rm -d --name dynamo-easy-demo-db -p 8000:8000 dynamo-easy-demo-db
+          timeout 30 sh -c 'until curl -s localhost:8000 >/dev/null; do sleep 1; done'
+
+      - name: 'Run Demo against local DynamoDB'
+        run: node ./dist/index.js
+        env:
+          DYNAMO_ENDPOINT: http://localhost:8000
+          DEMO_WRITE: 'true'
