@@ -1,4 +1,4 @@
-import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-provider-cognito-identity'
 import {
   BatchWriteRequest,
@@ -32,7 +32,7 @@ updateDynamoEasyConfig({
 const localEndpoint = process.env['DYNAMO_ENDPOINT']
 const writeEnabled = ['true', '1'].includes(process.env['DEMO_WRITE']?.toLowerCase() ?? '')
 
-const dynamoDB = new DynamoDB(
+const dynamoDB = new DynamoDBClient(
   localEndpoint
     ? {
         region: 'us-east-1',

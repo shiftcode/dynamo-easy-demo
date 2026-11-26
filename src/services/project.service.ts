@@ -1,4 +1,4 @@
-import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
 import { Project } from '../model/index.js'
 import { FnsDate } from '../static/fns-date.js'
@@ -6,7 +6,7 @@ import { FnsDate } from '../static/fns-date.js'
 export class ProjectService {
   readonly store: DynamoStore<Project>
 
-  constructor(dynamoDB: DynamoDB) {
+  constructor(dynamoDB: DynamoDBClient) {
     this.store = new DynamoStore<Project>(Project, dynamoDB)
   }
 

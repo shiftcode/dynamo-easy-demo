@@ -1,4 +1,4 @@
-import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoStore, update2, UpdateExpressionDefinitionFunction } from '@shiftcoders/dynamo-easy'
 import { Employee } from '../model/index.js'
 import { FnsDate } from '../static/fns-date.js'
@@ -6,7 +6,7 @@ import { FnsDate } from '../static/fns-date.js'
 export class EmployeeService {
   readonly store: DynamoStore<Employee>
 
-  constructor(dynamoDB: DynamoDB) {
+  constructor(dynamoDB: DynamoDBClient) {
     this.store = new DynamoStore<Employee>(Employee, dynamoDB)
   }
 

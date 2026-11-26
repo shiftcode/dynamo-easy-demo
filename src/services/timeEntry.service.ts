@@ -1,4 +1,4 @@
-import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoStore } from '@shiftcoders/dynamo-easy'
 import { Employee, Project, TimeEntry, TimeEntryId } from '../model/index.js'
 import { ClientProject } from '../model/client-project.model.js'
@@ -9,7 +9,7 @@ import { FnsDate } from '../static/fns-date.js'
 export class TimeEntryService {
   readonly store: DynamoStore<TimeEntry>
 
-  constructor(dynamoDB: DynamoDB) {
+  constructor(dynamoDB: DynamoDBClient) {
     this.store = new DynamoStore<TimeEntry>(TimeEntry, dynamoDB)
   }
 
