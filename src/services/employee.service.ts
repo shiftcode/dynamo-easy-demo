@@ -1,9 +1,14 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoStore, update2, UpdateExpressionDefinitionFunction } from '@shiftcoders/dynamo-easy'
-import { Employee } from '../model'
-import { FnsDate } from '../static/fns-date'
+import { Employee } from '../model/index.js'
+import { FnsDate } from '../static/fns-date.js'
 
 export class EmployeeService {
-  readonly store = new DynamoStore<Employee>(Employee)
+  readonly store: DynamoStore<Employee>
+
+  constructor(dynamoDB: DynamoDBClient) {
+    this.store = new DynamoStore<Employee>(Employee, dynamoDB)
+  }
 
   ////////////
   // | READ |//
@@ -27,7 +32,7 @@ export class EmployeeService {
   }
 
   transactGetManyByEmail(...emailAddresses: string[]) {
-    return this.store.transactGet(emailAddresses.map(email => ({ email }))).exec()
+    return this.store.transactGet(emailAddresses.map((email) => ({ email }))).exec()
   }
 
   /////////////
@@ -35,11 +40,7 @@ export class EmployeeService {
   /////////////
 
   terminateEmployment(employee: Employee, dateOfNotice: FnsDate = new FnsDate()): Promise<void> {
-    return this.store
-      .update(employee.email, employee.id)
-      .updateAttribute('dateOfNotice')
-      .set(dateOfNotice)
-      .exec()
+    return this.store.update(employee.email, employee.id).updateAttribute('dateOfNotice').set(dateOfNotice).exec()
   }
 
   addAchievements(employee: Employee, achievements: Set<string>): Promise<void> {
@@ -51,16 +52,17 @@ export class EmployeeService {
 
   removeAchievement(employee: Employee, achievements: string[]): Promise<void> {
     if (!employee.achievements) {
-      return Promise.reject('Employee does not contain any achievements')
+      return Promise.reject(new Error('Employee does not contain any achievements'))
     }
+    const existingAchievements = Array.from(employee.achievements)
 
     // find the indexes from the given achievements
     const indexes = achievements
-      .map(achievement => Array.from(employee.achievements!).findIndex(a => a === achievement))
-      .filter(ix => ix >= 0)
+      .map((achievement) => existingAchievements.findIndex((a) => a === achievement))
+      .filter((ix) => ix >= 0)
 
     if (indexes.length === 0) {
-      return Promise.reject('')
+      return Promise.reject(new Error('Employee does not contain any of the given achievements'))
     }
 
     return this.store
@@ -72,17 +74,13 @@ export class EmployeeService {
 
   addSkills(employee: Employee, skills: Set<string>): Promise<void> {
     const chain = update2(Employee, 'skills')
-    const operation = !!employee.skills ? chain.add(skills) : chain.set(skills)
+    const operation = employee.skills ? chain.add(skills) : chain.set(skills)
     return this.update(employee, operation)
   }
 
   removeSkills(employee: Employee, skills: string[] | Set<string>): Promise<void> {
     // when using set, you can remove items by their value
-    return this.store
-      .update(employee.email, employee.id)
-      .updateAttribute('skills')
-      .removeFromSet(skills)
-      .exec()
+    return this.store.update(employee.email, employee.id).updateAttribute('skills').removeFromSet(skills).exec()
   }
 
   incrementTooLateInOfficeCounter(employee: Employee): Promise<void> {

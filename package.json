@@ -2,7 +2,6 @@
   "name": "dynamo-easy-demo",
   "version": "5.0.0",
   "description": "simple project as showcase for dynamo-easy",
-  "license": "MIT",
   "keywords": [
     "node",
     "@shiftcoders/dynamo-easy",
@@ -13,52 +12,54 @@
     "dynamoDB",
     "demo"
   ],
-  "main": "./dist/index.js",
-  "engines": {
-    "node": "8.x"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/shiftcode/dynamo-easy-demo"
   },
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
   "scripts": {
-    "lint": "tslint -t codeFrame '{src, test}/**/*.ts' --project ./tsconfig.json --fix",
-    "build": "tsc",
-    "start": "ts-node ./src/index.ts",
+    "build": "tsc -p ./tsconfig.json",
     "deploy": "aws cloudformation deploy --template-file ./infrastructure.yml --stack-name dynamo-easy-demo --capabilities CAPABILITY_NAMED_IAM && npm run generate-outputs",
-    "generate-outputs": "aws cloudformation --region eu-central-1 describe-stacks --stack-name dynamo-easy-demo --query 'Stacks[0].Outputs' > src/cf-outputs.json"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "linters": {
-      "{src,test}/**/*.ts": [
-        "npx prettier --write --config ./.prettierrc.yml",
-        "npx tslint --fix --project tsconfig.json",
-        "git add"
-      ]
-    }
+    "format": "npx prettier --write .",
+    "generate-outputs": "aws cloudformation --region eu-central-1 describe-stacks --stack-name dynamo-easy-demo --query 'Stacks[0].Outputs' > src/cf-outputs.json",
+    "lint": "eslint --fix --cache .",
+    "prepare": "husky",
+    "start": "tsc && node ./dist/index.js"
   },
   "dependencies": {
-    "@shiftcoders/dynamo-easy": "^5.0.0",
-    "aws-sdk": "^2.385.0",
-    "date-fns": "^1.30.1",
-    "lodash": "^4.17.11",
-    "reflect-metadata": "^0.1.12",
-    "tslib": "^1.9.3",
-    "uuid": "^3.3.2"
+    "@aws-sdk/client-dynamodb": "^3.535.0",
+    "@aws-sdk/credential-provider-cognito-identity": "^3.535.0",
+    "@shiftcoders/dynamo-easy": "^8.0.0-next.10",
+    "date-fns": "^3.6.0",
+    "reflect-metadata": "^0.1.14",
+    "tslib": "^2.5.0"
   },
   "devDependencies": {
-    "@types/moment-timezone": "^0.5.10",
-    "@types/node": "^8.10.37",
-    "husky": "^1.3.1",
-    "lint-staged": "^8.1.0",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.17.0",
-    "typescript": "^3.2.2"
+    "@eslint/js": "^10.0.1",
+    "@eslint/markdown": "^9.0.0",
+    "@types/node": "^22.20.5",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.0.11",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.10.0",
+    "sort-package-json": "^4.1.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.73.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=22"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.10.0"
+    }
   }
 }

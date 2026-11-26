@@ -1,23 +1,18 @@
 {
   "compilerOptions": {
-    "moduleResolution": "node",
-    "target": "es2016",
-    "module": "commonjs",
-    "lib": [
-      "dom",
-      "es2016",
-      "esnext.asynciterable",
-      "es2017.object",
-      "es2017.string"
-    ],
+    "module": "nodenext",
+    "target": "esnext",
     "strict": true,
-    "resolveJsonModule": true,
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "importHelpers": true,
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap":  true,
-    "outDir": "./dist/"
-  }
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "./dist/",
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src"]
 }

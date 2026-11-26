@@ -1,9 +1,10 @@
 import { LogInfo, LogLevel } from '@shiftcoders/dynamo-easy'
 
-const LL = {
+const LL: Record<LogLevel, string> = {
   [LogLevel.WARNING]: 'WARNING',
   [LogLevel.INFO]: 'INFO',
   [LogLevel.DEBUG]: 'DEBUG',
+  [LogLevel.VERBOSE]: 'VERBOSE',
 }
 
 export function createLogReceiver(maxLevel: LogLevel) {

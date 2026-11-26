@@ -1,6 +1,6 @@
-import { addSeconds, endOfMonth, format, parse } from 'date-fns'
+import { addSeconds, endOfMonth, format, parseISO } from 'date-fns'
 
-const FMT_YEAR_MONTH = 'YYYYMM'
+const FMT_YEAR_MONTH = 'yyyyMM'
 
 /**
  * Immutable Date Object with helper functions
@@ -22,7 +22,7 @@ export class FnsDate {
 
   static fromYearMonth(yearmonth: number | string): FnsDate {
     const m = /^(\d{4})(\d{2})$/.exec(yearmonth.toString())
-    if (m && m.length === 3) {
+    if (m?.length === 3) {
       return new FnsDate(`${m[1]}-${m[2]}-01`)
     }
     throw new Error('given number is not a year-month number')
@@ -33,8 +33,10 @@ export class FnsDate {
       this.date = new Date()
     } else if (date instanceof Date) {
       this.date = date
+    } else if (typeof date === 'number') {
+      this.date = new Date(date)
     } else {
-      this.date = parse(date)
+      this.date = parseISO(date)
     }
   }
 
