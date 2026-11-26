@@ -31,7 +31,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.535.0",
     "@aws-sdk/credential-provider-cognito-identity": "^3.535.0",
-    "@shiftcoders/dynamo-easy": "^8.0.0-next",
+    "@shiftcoders/dynamo-easy": "^8.0.0-next.10",
     "date-fns": "^3.6.0",
     "reflect-metadata": "^0.1.14",
     "tslib": "^2.5.0"
